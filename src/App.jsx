@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { CadastroJogadores } from './components/CadastroJogadores';
+import { Marcador } from './components/Marcador';
 
 function App() {
     const [partidaIniciada, setPartidaIniciada] = useState(false);
@@ -17,12 +18,14 @@ function App() {
                 <CadastroJogadores onGameStart={handleGameStart} />
             ) : (
                 <div>
-                    Jogadores
+                    {/* Jogadores
                     <ul>
                         {nomes.map((nome, i) => {
                             return <li key={i}>{nome}</li>;
                         })}
-                    </ul>
+                    </ul> */}
+
+                    <Marcador nomes={nomes} />
                 </div>
             )}
         </div>
