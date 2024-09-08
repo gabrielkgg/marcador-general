@@ -11,6 +11,15 @@ function App() {
         setNomes(nomes);
     };
 
+    const handleGameReset = () => {
+        const reset = confirm(
+            'Esta ação reiniciará o jogo completamente, prosseguir?'
+        );
+        if (reset) {
+            setPartidaIniciada(false);
+        }
+    };
+
     return (
         <div>
             <h1>Marcador de General</h1>
@@ -25,7 +34,7 @@ function App() {
                         })}
                     </ul> */}
 
-                    <Marcador nomes={nomes} />
+                    <Marcador nomes={nomes} onGameReset={handleGameReset} />
                 </div>
             )}
         </div>

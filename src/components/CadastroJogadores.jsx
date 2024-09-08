@@ -1,14 +1,13 @@
 import React, { useState } from 'react';
 
 export function CadastroJogadores({ onGameStart }) {
-    const [numJogadores, setNumJogadores] = useState(1);
+    const [numJogadores, setNumJogadores] = useState(2);
     const [nomes, setNomes] = useState([]);
 
     const handleNumJogadoresChange = (e) => {
         setNumJogadores(Number(e.target.value));
     };
 
-    // TODO: ao iniciar, precisa salvar os pontos como zero
     const handleNomesJogadores = (i, valor) => {
         const novosNomes = [...nomes];
         novosNomes[i] = valor;
@@ -16,7 +15,11 @@ export function CadastroJogadores({ onGameStart }) {
     };
 
     const handleSalvar = () => {
-        onGameStart(nomes);
+        const jogadores = nomes.map((nome) => ({
+            nome,
+            pontos: 0,
+        }));
+        onGameStart(jogadores);
     };
 
     return (
