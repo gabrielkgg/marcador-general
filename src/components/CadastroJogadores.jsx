@@ -17,7 +17,11 @@ export function CadastroJogadores({ onGameStart }) {
     const handleSalvar = () => {
         const jogadores = nomes.map((nome) => ({
             nome,
-            pontos: 0,
+            pontos: {
+                ones: undefined,
+                twos: 0,
+                total: 0,
+            },
         }));
         onGameStart(jogadores);
     };
