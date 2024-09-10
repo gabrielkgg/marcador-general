@@ -1,61 +1,88 @@
 import React from 'react';
 
 export function Tabela({ jogadorAtual, jogadores, setPonto }) {
-    const arrayPontosOne = [0, 1, 2, 3, 4, 5, 6];
-    // const arrayPontosTwo = [0, 2, 4, 6, 8, 10, 12];
+    const arrayPontos = [
+        {
+            ones: { legenda: '1', pontos: [0, 1, 2, 3, 4, 5] },
+        },
+        {
+            twos: { legenda: '2', pontos: [0, 2, 4, 6, 8, 10] },
+        },
+        {
+            threes: { legenda: '3', pontos: [0, 3, 6, 9, 12, 15] },
+        },
+        {
+            fours: { legenda: '4', pontos: [0, 4, 8, 12, 16, 20] },
+        },
+        {
+            fives: { legenda: '5', pontos: [0, 5, 10, 15, 20, 25] },
+        },
+        {
+            sixes: { legenda: '6', pontos: [0, 6, 12, 18, 24, 30] },
+        },
+        {
+            fullHouse: { legenda: 'Fula', pontos: [0, 20] },
+        },
+        {
+            straight: { legenda: 'Sequência', pontos: [0, 30] },
+        },
+        {
+            quadra: { legenda: 'Quadra', pontos: [0, 40] },
+        },
+        {
+            general: { legenda: 'General', pontos: [0, 50] },
+        },
+        {
+            generalDeMao: { legenda: 'General de Mão', pontos: [0, 100] },
+        },
+    ];
+
+    // TODO fazer opções (de mão) para algumas jogadas
 
     return (
-        <table>
-            <tbody>
-                <tr>
-                    <th>1:</th>
-                    {arrayPontosOne.map((valor, index) => (
-                        <td
-                            key={index}
-                            onClick={() =>
-                                setPonto(jogadorAtual, valor, 'ones')
-                            }
-                            className={
-                                jogadores[jogadorAtual].pontos['ones'] !==
-                                undefined
-                                    ? 'preenchido'
-                                    : ''
-                            }
-                        >
-                            {jogadores[jogadorAtual].pontos['ones'] ===
-                            valor ? (
-                                <strong>{valor}</strong>
-                            ) : (
-                                valor
-                            )}
-                        </td>
-                    ))}
-                </tr>
-                {/* <tr>
-                    <th>2:</th>
-                    {arrayPontosTwo.map((valor, index) => (
-                        <td
-                            key={index}
-                            onClick={() =>
-                                setPonto(jogadorAtual, valor, 'twos')
-                            }
-                            className={
-                                jogadores[jogadorAtual].pontos['twos'] !==
-                                undefined
-                                    ? 'preenchido'
-                                    : ''
-                            }
-                        >
-                            {jogadores[jogadorAtual].pontos['twos'] ===
-                            valor ? (
-                                <strong>{valor}</strong>
-                            ) : (
-                                valor
-                            )}
-                        </td>
-                    ))}
-                </tr> */}
-            </tbody>
-        </table>
+        <div>
+            <table>
+                <tbody>
+                    {arrayPontos.map((pontos, indexPontos) => {
+                        const nomePropriedade = Object.keys(pontos)[0]; // Acessa o nome da propriedade, ex: "ones" ou "twos"
+                        const valores = pontos[nomePropriedade].pontos; // Acessa o array de valores (ex: [0, 1, 2, 3, 4, 5, 6])
+                        const legenda = pontos[nomePropriedade].legenda;
+
+                        return (
+                            <tr key={indexPontos}>
+                                <th>{legenda}:</th>
+                                {valores.map((valor, indexValor) => (
+                                    <td
+                                        key={indexValor}
+                                        onClick={() =>
+                                            setPonto(
+                                                jogadorAtual,
+                                                valor,
+                                                nomePropriedade
+                                            )
+                                        }
+                                        className={
+                                            jogadores[jogadorAtual].pontos[
+                                                nomePropriedade
+                                            ] !== undefined
+                                                ? 'preenchido'
+                                                : ''
+                                        }
+                                    >
+                                        {jogadores[jogadorAtual].pontos[
+                                            nomePropriedade
+                                        ] === valor ? (
+                                            <strong>{valor}</strong>
+                                        ) : (
+                                            valor
+                                        )}
+                                    </td>
+                                ))}
+                            </tr>
+                        );
+                    })}
+                </tbody>
+            </table>
+        </div>
     );
 }

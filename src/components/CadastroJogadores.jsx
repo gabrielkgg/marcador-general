@@ -14,12 +14,13 @@ export function CadastroJogadores({ onGameStart }) {
         setNomes(novosNomes);
     };
 
+    // TODO preencher aqui os valores conforme o array de pontos
     const handleSalvar = () => {
         const jogadores = nomes.map((nome) => ({
             nome,
             pontos: {
                 ones: undefined,
-                twos: 0,
+                // twos: undefined,
                 total: 0,
             },
         }));

@@ -63,11 +63,12 @@ export function Marcador({ nomes, onGameReset }) {
                         jogadores={jogadores}
                         setPonto={setPonto}
                     />
-
+                    {/* //TODO adicionar botão de voltar jogada */}
                     <button onClick={proximoJogador}>Finalizar jogada</button>
                     <button onClick={onGameReset}>Reiniciar partida</button>
                 </div>
             ) : (
+                // TODO transformar isso num componente FimDeJogo
                 <div>
                     Fim de jogo:
                     <ul>
@@ -75,11 +76,12 @@ export function Marcador({ nomes, onGameReset }) {
                             return (
                                 <li key={index}>
                                     {jogador.nome} - {jogador.pontos}
-                                    {index === 0 ? ' \u{1F3C6}' : ''}
+                                    {index === 0 ? ' \u{1F3C6}' : ' \u{1F986}'}
                                 </li>
                             );
                         })}
                     </ul>
+                    <button onClick={onGameReset}>Reiniciar partida</button>
                 </div>
             )}
         </div>
