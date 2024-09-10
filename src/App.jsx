@@ -27,13 +27,6 @@ function App() {
                 <CadastroJogadores onGameStart={handleGameStart} />
             ) : (
                 <div>
-                    {/* Jogadores
-                    <ul>
-                        {nomes.map((nome, i) => {
-                            return <li key={i}>{nome}</li>;
-                        })}
-                    </ul> */}
-
                     <Marcador nomes={nomes} onGameReset={handleGameReset} />
                 </div>
             )}

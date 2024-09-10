@@ -1,11 +1,17 @@
 import React, { useState } from 'react';
+import { Tabela } from './Tabela';
 
 export function Marcador({ nomes, onGameReset }) {
     const [jogadores, setJogadores] = useState(nomes);
     const [jogadorAtual, setJogadorAtual] = useState(0);
-    const arrayPontosOne = [1, 2, 3, 4, 5, 6];
+    const [marcouPonto, setMarcouPonto] = useState(false);
+    const [gameOver, setGameOver] = useState(false);
+    const [listaNomes, setListaNomes] = useState([]);
+
     const proximoJogador = () => {
+        setMarcouPonto(false);
         setJogadorAtual((jogadorAtual + 1) % nomes.length);
+        fimDoJogo();
     };
 
     const setPonto = (jogadorAtual, pontos, obj) => {
@@ -17,46 +23,65 @@ export function Marcador({ nomes, onGameReset }) {
             return;
         }
 
+        // Se detectamos que o jogador já marcou ponto nessa rodada, nada acontece
+        if (marcouPonto) {
+            return;
+        }
+
+        setMarcouPonto(true);
         novosJogadores[jogadorAtual].pontos[obj] = pontos;
         novosJogadores[jogadorAtual].pontos['total'] += pontos;
-
         setJogadores(novosJogadores);
+    };
+
+    const fimDoJogo = () => {
+        // Varre o array de jogadores verificando se todos preencheram tudo.
+        const todosPontosMarcados = jogadores.every((jogador) =>
+            Object.values(jogador.pontos).every((valor) => valor !== undefined)
+        );
+
+        if (todosPontosMarcados) {
+            const jogadoresOrdenados = jogadores.sort(
+                (a, b) => b.pontos.total - a.pontos.total
+            );
+            const listaNomes = jogadoresOrdenados.map((jogador) => {
+                return { nome: jogador.nome, pontos: jogador.pontos.total };
+            });
+            setListaNomes(listaNomes);
+            setGameOver(true);
+        }
     };
 
     return (
         <div>
-            <p>Vez de {nomes[jogadorAtual].nome}</p>
-            <p>Total pontos: {nomes[jogadorAtual].pontos.total}</p>
-            <table>
-                <tbody>
-                    <tr>
-                        <th>1:</th>
-                        {arrayPontosOne.map((valor, index) => (
-                            <td
-                                key={index}
-                                onClick={() =>
-                                    setPonto(jogadorAtual, valor, 'ones')
-                                }
-                                className={
-                                    jogadores[jogadorAtual].pontos['ones'] !==
-                                    undefined
-                                        ? 'preenchido'
-                                        : ''
-                                }
-                            >
-                                {jogadores[jogadorAtual].pontos['ones'] ===
-                                valor ? (
-                                    <strong>{valor}</strong>
-                                ) : (
-                                    valor
-                                )}
-                            </td>
-                        ))}
-                    </tr>
-                </tbody>
-            </table>
-            <button onClick={proximoJogador}>Finalizar jogada</button>
-            <button onClick={onGameReset}>Reiniciar partida</button>
+            {!gameOver ? (
+                <div>
+                    <p>Vez de {nomes[jogadorAtual].nome}</p>
+                    <p>Total pontos: {nomes[jogadorAtual].pontos.total}</p>
+                    <Tabela
+                        jogadorAtual={jogadorAtual}
+                        jogadores={jogadores}
+                        setPonto={setPonto}
+                    />
+
+                    <button onClick={proximoJogador}>Finalizar jogada</button>
+                    <button onClick={onGameReset}>Reiniciar partida</button>
+                </div>
+            ) : (
+                <div>
+                    Fim de jogo:
+                    <ul>
+                        {listaNomes.map((jogador, index) => {
+                            return (
+                                <li key={index}>
+                                    {jogador.nome} - {jogador.pontos}
+                                    {index === 0 ? ' \u{1F3C6}' : ''}
+                                </li>
+                            );
+                        })}
+                    </ul>
+                </div>
+            )}
         </div>
     );
 }
