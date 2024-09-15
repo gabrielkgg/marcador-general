@@ -21,13 +21,13 @@ export function Tabela({ jogadorAtual, jogadores, setPonto }) {
             sixes: { legenda: '6', pontos: [0, 6, 12, 18, 24, 30] },
         },
         {
-            fullHouse: { legenda: 'Fula', pontos: [0, 20] },
+            fullHouse: { legenda: 'Fula', pontos: [0, 20, 25] },
         },
         {
-            straight: { legenda: 'Sequência', pontos: [0, 30] },
+            straight: { legenda: 'Sequência', pontos: [0, 30, 35] },
         },
         {
-            quadra: { legenda: 'Quadra', pontos: [0, 40] },
+            quadra: { legenda: 'Quadra', pontos: [0, 40, 45] },
         },
         {
             general: { legenda: 'General', pontos: [0, 50] },
@@ -36,8 +36,6 @@ export function Tabela({ jogadorAtual, jogadores, setPonto }) {
             generalDeMao: { legenda: 'General de Mão', pontos: [0, 100] },
         },
     ];
-
-    // TODO fazer opções (de mão) para algumas jogadas
 
     return (
         <div>

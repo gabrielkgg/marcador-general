@@ -12,9 +12,7 @@ function App() {
     };
 
     const handleGameReset = () => {
-        const reset = confirm(
-            'Esta ação reiniciará o jogo completamente, prosseguir?'
-        );
+        const reset = confirm('Esta ação reiniciará o jogo, prosseguir?');
         if (reset) {
             setPartidaIniciada(false);
         }
