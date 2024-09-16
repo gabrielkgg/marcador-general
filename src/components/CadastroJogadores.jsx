@@ -40,11 +40,9 @@ export function CadastroJogadores({ onGameStart }) {
             <label>
                 Número de jogadores:
                 <input
-                    type="number"
                     value={numJogadores}
                     onChange={handleNumJogadoresChange}
-                    min="1"
-                    max="10"
+                    inputMode="numeric"
                 />
             </label>
             {Array.from({ length: numJogadores }, (_, i) => (
