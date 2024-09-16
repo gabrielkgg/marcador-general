@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { CadastroJogadores } from './components/CadastroJogadores';
 import { Marcador } from './components/Marcador';
+import './styles/App.scss';
 
 function App() {
     const [partidaIniciada, setPartidaIniciada] = useState(false);
@@ -19,7 +20,7 @@ function App() {
     };
 
     return (
-        <div>
+        <div className="container">
             <h1>Marcador de General</h1>
             {!partidaIniciada ? (
                 <CadastroJogadores onGameStart={handleGameStart} />

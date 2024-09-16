@@ -36,31 +36,28 @@ export function CadastroJogadores({ onGameStart }) {
     };
 
     return (
-        <div>
-            Insira o número de jogadores:
-            <input
-                type="number"
-                value={numJogadores}
-                onChange={handleNumJogadoresChange}
-                min="1"
-                max="10"
-            />
-            <div>
-                {Array.from({ length: numJogadores }, (_, i) => (
-                    <input
-                        key={i}
-                        type="text"
-                        placeholder={`Nome do jogador ${i + 1}`}
-                        autoComplete="off"
-                        name={nomes[i] || ''}
-                        onChange={(e) =>
-                            handleNomesJogadores(i, e.target.value)
-                        }
-                    />
-                ))}
-
-                <button onClick={handleSalvar}>Iniciar partida</button>
-            </div>
+        <div className="container">
+            <label>
+                Número de jogadores:
+                <input
+                    type="number"
+                    value={numJogadores}
+                    onChange={handleNumJogadoresChange}
+                    min="1"
+                    max="10"
+                />
+            </label>
+            {Array.from({ length: numJogadores }, (_, i) => (
+                <input
+                    key={i}
+                    type="text"
+                    placeholder={`Nome do jogador ${i + 1}`}
+                    autoComplete="off"
+                    name={nomes[i] || ''}
+                    onChange={(e) => handleNomesJogadores(i, e.target.value)}
+                />
+            ))}
+            <button onClick={handleSalvar}>Iniciar partida</button>
         </div>
     );
 }
