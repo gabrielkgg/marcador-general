@@ -21,7 +21,9 @@ function App() {
 
     return (
         <div className="container">
-            <h1>Marcador de General</h1>
+            <header>
+                <h1>Marcador de General</h1>
+            </header>
             {!partidaIniciada ? (
                 <CadastroJogadores onGameStart={handleGameStart} />
             ) : (

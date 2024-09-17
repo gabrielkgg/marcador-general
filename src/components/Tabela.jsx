@@ -1,4 +1,5 @@
 import React from 'react';
+import './../styles/Tabela.scss';
 
 export function Tabela({ jogadorAtual, jogadores, setPonto }) {
     const arrayPontos = [
@@ -24,16 +25,16 @@ export function Tabela({ jogadorAtual, jogadores, setPonto }) {
             fullHouse: { legenda: 'Fula', pontos: [0, 20, 25] },
         },
         {
-            straight: { legenda: 'Sequência', pontos: [0, 30, 35] },
+            straight: { legenda: 'Seq.', pontos: [0, 30, 35] },
         },
         {
-            quadra: { legenda: 'Quadra', pontos: [0, 40, 45] },
+            quadra: { legenda: 'Quad.', pontos: [0, 40, 45] },
         },
         {
-            general: { legenda: 'General', pontos: [0, 50] },
+            general: { legenda: 'Gen.', pontos: [0, 50] },
         },
         {
-            generalDeMao: { legenda: 'General de Mão', pontos: [0, 100] },
+            generalDeMao: { legenda: 'De Mão', pontos: [0, 100] },
         },
     ];
 
@@ -45,6 +46,13 @@ export function Tabela({ jogadorAtual, jogadores, setPonto }) {
                         const nomePropriedade = Object.keys(pontos)[0]; // Acessa o nome da propriedade, ex: "ones" ou "twos"
                         const valores = pontos[nomePropriedade].pontos; // Acessa o array de valores (ex: [0, 1, 2, 3, 4, 5, 6])
                         const legenda = pontos[nomePropriedade].legenda;
+                        const linhaEspecial = [
+                            'fullHouse',
+                            'straight',
+                            'quadra',
+                            'general',
+                            'generalDeMao',
+                        ].includes(nomePropriedade);
 
                         return (
                             <tr key={indexPontos}>
@@ -66,13 +74,14 @@ export function Tabela({ jogadorAtual, jogadores, setPonto }) {
                                                 ? 'preenchido'
                                                 : ''
                                         }
+                                        colSpan={linhaEspecial ? 2 : 1}
                                     >
                                         {jogadores[jogadorAtual].pontos[
                                             nomePropriedade
                                         ] === valor ? (
                                             <strong>{valor}</strong>
                                         ) : (
-                                            valor
+                                            <span>{valor}</span>
                                         )}
                                     </td>
                                 ))}

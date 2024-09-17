@@ -11,6 +11,10 @@ export function Marcador({ nomes, onGameReset }) {
     const [voltarJogada, setVoltarJogada] = useState({});
 
     const proximoJogador = () => {
+        if (!marcouPonto) {
+            return;
+        }
+
         setMarcouPonto(false);
         setJogadorAtual((jogadorAtual + 1) % nomes.length);
         fimDoJogo();

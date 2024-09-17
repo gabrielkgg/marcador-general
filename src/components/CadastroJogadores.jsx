@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import './../styles/CadastroJogadores.scss';
 
 export function CadastroJogadores({ onGameStart }) {
     const [numJogadores, setNumJogadores] = useState(2);
@@ -43,6 +44,7 @@ export function CadastroJogadores({ onGameStart }) {
                     value={numJogadores}
                     onChange={handleNumJogadoresChange}
                     inputMode="numeric"
+                    className="quantidade-jogadores"
                 />
             </label>
             {Array.from({ length: numJogadores }, (_, i) => (
@@ -55,7 +57,9 @@ export function CadastroJogadores({ onGameStart }) {
                     onChange={(e) => handleNomesJogadores(i, e.target.value)}
                 />
             ))}
-            <button onClick={handleSalvar}>Iniciar partida</button>
+            <footer>
+                <button onClick={handleSalvar}>Iniciar partida</button>
+            </footer>
         </div>
     );
 }
