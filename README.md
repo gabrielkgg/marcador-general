@@ -7,3 +7,4 @@ Link do protótipo: https://www.figma.com/design/w2wDnNJYO2hEUXcqDhLEAc/General-
 TODO:
 Adicionar ícone no header/favicon
 Adicionar ícone de check no botão "confirmar jogada"
+Adicionar validação para não deixar inserir nome de jogador em branco
