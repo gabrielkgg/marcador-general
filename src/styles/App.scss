@@ -1,5 +1,4 @@
-// Link Figma https://www.figma.com/design/w2wDnNJYO2hEUXcqDhLEAc/General-%5B2024%5D?node-id=15-85&node-type=section
-@import '_variaveis.scss';
+@import '_all';
 
 * {
     margin: 0;
@@ -61,11 +60,13 @@ p {
     display: flex;
     flex-direction: column;
     align-items: center;
+    margin: 0 1em;
 }
 
 .holder {
     background: $background-holder;
     padding: $padding-holder;
+    border-radius: 4px;
 }
 
 /* Para remover as setas no Chrome, Safari, Edge, etc. */

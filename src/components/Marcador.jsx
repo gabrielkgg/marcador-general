@@ -12,9 +12,9 @@ export function Marcador({ nomes, onGameReset }) {
     const [voltarJogada, setVoltarJogada] = useState({});
 
     const proximoJogador = () => {
-        if (!marcouPonto) {
-            return;
-        }
+        // if (!marcouPonto) {
+        //     return;
+        // }
 
         setMarcouPonto(false);
         setJogadorAtual((jogadorAtual + 1) % nomes.length);
@@ -30,9 +30,12 @@ export function Marcador({ nomes, onGameReset }) {
             return;
         }
 
-        // Se detectamos que o jogador já marcou ponto nessa rodada, nada acontece
+        // Se detectamos que o jogador já marcou ponto nessa rodada, reduzimos o que tinha marcado antes
         if (marcouPonto) {
-            return;
+            novosJogadores[voltarJogada.jogadorAtual].pontos[voltarJogada.obj] =
+                undefined;
+            novosJogadores[voltarJogada.jogadorAtual].pontos['total'] -=
+                voltarJogada.pontos;
         }
 
         setMarcouPonto(true);
@@ -83,21 +86,40 @@ export function Marcador({ nomes, onGameReset }) {
     };
 
     return (
-        <div>
+        <>
             {!gameOver ? (
-                <div className="holder table-holder">
-                    <p className="vez-de">Vez de {nomes[jogadorAtual].nome}</p>
-                    <p className="pontos">
-                        {nomes[jogadorAtual].pontos.total} pontos
-                    </p>
-                    <Tabela
-                        jogadorAtual={jogadorAtual}
-                        jogadores={jogadores}
-                        setPonto={setPonto}
-                    />
-                    <button onClick={voltarJogadaHandler}>Voltar jogada</button>
-                    <button onClick={proximoJogador}>Finalizar jogada</button>
-                    <button onClick={onGameReset}>Reiniciar partida</button>
+                <div>
+                    <div className="holder table-holder">
+                        <p className="vez-de">
+                            Vez de {nomes[jogadorAtual].nome}
+                        </p>
+                        <p className="pontos">
+                            {nomes[jogadorAtual].pontos.total} pontos
+                        </p>
+                        <Tabela
+                            jogadorAtual={jogadorAtual}
+                            jogadores={jogadores}
+                            setPonto={setPonto}
+                        />
+                        {marcouPonto && (
+                            <div className="flex justify-center confirmar-jogada-holder">
+                                <button
+                                    onClick={proximoJogador}
+                                    className="botao-padrao font-regular"
+                                >
+                                    Confirmar jogada
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                    <div className="flex justify-center">
+                        <button
+                            onClick={onGameReset}
+                            className="botao-opaco font-regular"
+                        >
+                            Reiniciar partida
+                        </button>
+                    </div>
                 </div>
             ) : (
                 <FimDeJogo
@@ -105,6 +127,6 @@ export function Marcador({ nomes, onGameReset }) {
                     onGameReset={onGameReset}
                 />
             )}
-        </div>
+        </>
     );
 }

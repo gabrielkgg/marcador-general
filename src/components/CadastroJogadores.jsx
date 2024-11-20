@@ -129,8 +129,11 @@ export function CadastroJogadores({ onGameStart }) {
                     </div>
                 ))}
             </div>
-            <div className="botao-iniciar ">
-                <button onClick={handleSalvar} className="font-regular">
+            <div>
+                <button
+                    onClick={handleSalvar}
+                    className="botao-padrao font-regular"
+                >
                     Iniciar partida
                 </button>
             </div>

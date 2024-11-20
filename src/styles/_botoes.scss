@@ -1,0 +1,43 @@
+@import '_variaveis';
+
+.botao-padrao {
+    background: linear-gradient(90deg, #2413a1 0%, #0092e6 100%);
+    border-radius: 4px;
+    border: none;
+    height: 58px;
+    font-size: $font-size + 2px;
+    color: #fff;
+    padding: 0 2em;
+}
+
+.botao-opaco {
+    position: relative;
+    border-radius: 4px;
+    height: 58px;
+    font-size: $font-size + 2px;
+    color: #fff;
+    padding: 0 2em;
+    border: 1px solid #3925d0; //fazer gradient de #9b74cf para #3925d0
+    background: transparent;
+    border: none; /* Remove borda padrão */
+    z-index: 1; /* Conteúdo acima do gradiente */
+    overflow: hidden; /* Esconde excessos dos pseudo-elementos */
+
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        border-radius: inherit; /* Herda o mesmo raio do botão */
+        padding: 2px; /* Espessura da borda */
+        background: linear-gradient(to right, #9b74cf, #3925d0); /* Gradiente */
+        -webkit-mask:
+            linear-gradient(#fff 0 0) content-box,
+            linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor; /* Exclui o conteúdo interno */
+        mask-composite: exclude; /* Suporte para outros navegadores */
+        z-index: -1; /* Fica atrás do conteúdo do botão */
+    }
+}
