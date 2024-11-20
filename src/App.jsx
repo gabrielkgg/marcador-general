@@ -22,7 +22,9 @@ function App() {
     return (
         <div className="container">
             <header>
-                <h1>Marcador de General</h1>
+                {/* TODO essa desgraça de logo não está funcionando */}
+                {/* <img src="/img/logo.png" alt="Logo Marcador General" /> */}
+                <h1 className="font-bold">Marcador de General</h1>
             </header>
             {!partidaIniciada ? (
                 <CadastroJogadores onGameStart={handleGameStart} />

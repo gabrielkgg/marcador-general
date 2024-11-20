@@ -1,3 +1,37 @@
+@import '_flex.scss';
+
 $padding: 0.3em 1em;
 $font-white: #ececec;
+$font-size: 16px;
 $green: #0d761c;
+$background-solid: #13082f;
+$background-holder: #191440;
+$padding-holder: 32px 24px;
+$background-gradient: linear-gradient(180deg, #13082f 0%, #2413a1 100%);
+$border-color: #b9b5c1;
+
+.font {
+    &-regular {
+        font-family: 'Roboto Slab', sans-serif;
+        font-weight: 400;
+        font-style: normal;
+    }
+
+    &-medium {
+        font-family: 'Roboto Slab', sans-serif;
+        font-weight: 500;
+        font-style: normal;
+    }
+
+    &-bold {
+        font-family: 'Roboto Slab', sans-serif;
+        font-weight: 700;
+        font-style: normal;
+    }
+
+    &-regular-italic {
+        font-family: 'Roboto Slab', sans-serif;
+        font-weight: 400;
+        font-style: italic;
+    }
+}

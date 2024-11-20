@@ -1,3 +1,4 @@
+// Link Figma https://www.figma.com/design/w2wDnNJYO2hEUXcqDhLEAc/General-%5B2024%5D?node-id=15-85&node-type=section
 @import '_variaveis.scss';
 
 * {
@@ -5,23 +6,16 @@
     padding: 0;
     box-sizing: border-box;
     font-size: 1.2rem;
-    font-family: monospace;
 }
 
 html,
 body {
-    font-family: Arial, sans-serif;
     line-height: 1.6;
     min-height: 100%;
 }
 
 body {
-    background: rgb(4, 2, 31);
-    background: linear-gradient(
-        160deg,
-        rgba(4, 2, 31, 1) 0%,
-        rgba(42, 57, 94, 1) 100%
-    );
+    background: $background-solid;
 }
 
 header {
@@ -63,22 +57,25 @@ p {
     text-align: center;
 }
 
-button {
-    padding: $padding;
-    border-radius: 3px;
-    color: $font-white;
-    border: 4px solid $green;
-    background-color: green;
-
-    &:hover,
-    &:active {
-        border-color: green;
-        background-color: $green;
-    }
-}
-
 .container {
     display: flex;
     flex-direction: column;
     align-items: center;
+}
+
+.holder {
+    background: $background-holder;
+    padding: $padding-holder;
+}
+
+/* Para remover as setas no Chrome, Safari, Edge, etc. */
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Para remover as setas no Firefox */
+input[type='number'] {
+    -moz-appearance: textfield;
 }

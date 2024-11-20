@@ -56,7 +56,7 @@ export function Tabela({ jogadorAtual, jogadores, setPonto }) {
 
                         return (
                             <tr key={indexPontos}>
-                                <th>{legenda}:</th>
+                                <th>{legenda}</th>
                                 {valores.map((valor, indexValor) => (
                                     <td
                                         key={indexValor}
@@ -70,19 +70,18 @@ export function Tabela({ jogadorAtual, jogadores, setPonto }) {
                                         className={
                                             jogadores[jogadorAtual].pontos[
                                                 nomePropriedade
-                                            ] !== undefined
-                                                ? 'preenchido'
-                                                : ''
+                                            ] === valor
+                                                ? 'marcado'
+                                                : jogadores[jogadorAtual]
+                                                        .pontos[
+                                                        nomePropriedade
+                                                    ] !== undefined
+                                                  ? 'preenchido'
+                                                  : ''
                                         }
                                         colSpan={linhaEspecial ? 2 : 1}
                                     >
-                                        {jogadores[jogadorAtual].pontos[
-                                            nomePropriedade
-                                        ] === valor ? (
-                                            <strong>{valor}</strong>
-                                        ) : (
-                                            <span>{valor}</span>
-                                        )}
+                                        {valor}
                                     </td>
                                 ))}
                             </tr>

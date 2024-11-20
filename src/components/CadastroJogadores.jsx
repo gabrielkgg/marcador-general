@@ -111,19 +111,29 @@ export function CadastroJogadores({ onGameStart }) {
                 </div>
                 jogadores
             </label>
-            {Array.from({ length: numJogadores }, (_, i) => (
-                <input
-                    key={i}
-                    type="text"
-                    placeholder={`Nome do jogador ${i + 1}`}
-                    autoComplete="off"
-                    name={nomes[i] || ''}
-                    onChange={(e) => handleNomesJogadores(i, e.target.value)}
-                />
-            ))}
-            <footer>
-                <button onClick={handleSalvar}>Iniciar partida</button>
-            </footer>
+            <div className="nome-jogadores">
+                {Array.from({ length: numJogadores }, (_, i) => (
+                    <div>
+                        <label htmlFor={nomes[i] || ''}>Jogador {i + 1}</label>
+                        <input
+                            key={i}
+                            type="text"
+                            className="font-medium"
+                            placeholder={`Nome do jogador ${i + 1}`}
+                            autoComplete="off"
+                            name={nomes[i] || ''}
+                            onChange={(e) =>
+                                handleNomesJogadores(i, e.target.value)
+                            }
+                        />
+                    </div>
+                ))}
+            </div>
+            <div className="botao-iniciar ">
+                <button onClick={handleSalvar} className="font-regular">
+                    Iniciar partida
+                </button>
+            </div>
         </div>
     );
 }

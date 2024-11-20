@@ -4,7 +4,6 @@ table {
     color: $font-white;
     margin-top: 1em;
     width: 100%;
-    padding: 0 0.3em;
     table-layout: fixed;
     margin-bottom: 2em;
 }
@@ -12,26 +11,23 @@ table {
 th {
     text-align: center;
     margin-right: 1em;
-    color: #8d8d8d;
+    font-size: $font-size;
+    font-weight: 400;
 }
 
 td {
     text-align: center;
-}
+    color: #736890;
+    background: #312c53;
+    border-radius: 4px;
+    font-size: $font-size + 4;
 
-th,
-td {
-    padding-bottom: 0.3em;
-}
-
-.preenchido {
-    strong {
-        background: $green;
-        border-radius: 50%;
-        padding: 0.3em;
+    &.marcado {
+        background: #0092e5;
+        color: $font-white;
     }
 
-    span {
-        opacity: 0.2;
+    &.preenchido {
+        opacity: 0.4;
     }
 }

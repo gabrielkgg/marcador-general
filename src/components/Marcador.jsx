@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Tabela } from './Tabela';
 import { FimDeJogo } from './FimDeJogo';
+import './../styles/Marcador.scss';
 
 export function Marcador({ nomes, onGameReset }) {
     const [jogadores, setJogadores] = useState(nomes);
@@ -84,9 +85,11 @@ export function Marcador({ nomes, onGameReset }) {
     return (
         <div>
             {!gameOver ? (
-                <div>
-                    <p>Vez de {nomes[jogadorAtual].nome}</p>
-                    <p>Total pontos: {nomes[jogadorAtual].pontos.total}</p>
+                <div className="holder table-holder">
+                    <p className="vez-de">Vez de {nomes[jogadorAtual].nome}</p>
+                    <p className="pontos">
+                        {nomes[jogadorAtual].pontos.total} pontos
+                    </p>
                     <Tabela
                         jogadorAtual={jogadorAtual}
                         jogadores={jogadores}
