@@ -55,37 +55,39 @@ export function Tabela({ jogadorAtual, jogadores, setPonto }) {
                         ].includes(nomePropriedade);
 
                         return (
-                            <tr key={indexPontos}>
-                                <th>{legenda}:</th>
-                                {valores.map((valor, indexValor) => (
-                                    <td
-                                        key={indexValor}
-                                        onClick={() =>
-                                            setPonto(
-                                                jogadorAtual,
-                                                valor,
-                                                nomePropriedade
-                                            )
-                                        }
-                                        className={
-                                            jogadores[jogadorAtual].pontos[
-                                                nomePropriedade
-                                            ] !== undefined
-                                                ? 'preenchido'
-                                                : ''
-                                        }
-                                        colSpan={linhaEspecial ? 2 : 1}
-                                    >
-                                        {jogadores[jogadorAtual].pontos[
-                                            nomePropriedade
-                                        ] === valor ? (
-                                            <strong>{valor}</strong>
-                                        ) : (
-                                            <span>{valor}</span>
-                                        )}
-                                    </td>
-                                ))}
-                            </tr>
+                            <>
+                                <tr key={indexPontos}>
+                                    <th>{legenda}</th>
+                                    {valores.map((valor, indexValor) => (
+                                        <td
+                                            key={indexValor}
+                                            onClick={() =>
+                                                setPonto(
+                                                    jogadorAtual,
+                                                    valor,
+                                                    nomePropriedade
+                                                )
+                                            }
+                                            className={
+                                                jogadores[jogadorAtual].pontos[
+                                                    nomePropriedade
+                                                ] === valor
+                                                    ? 'marcado'
+                                                    : jogadores[jogadorAtual]
+                                                            .pontos[
+                                                            nomePropriedade
+                                                        ] !== undefined
+                                                      ? 'preenchido'
+                                                      : ''
+                                            }
+                                            colSpan={linhaEspecial ? 2 : 1}
+                                        >
+                                            {valor}
+                                        </td>
+                                    ))}
+                                </tr>
+                                {indexPontos === 5 && <br />}{' '}
+                            </>
                         );
                     })}
                 </tbody>
