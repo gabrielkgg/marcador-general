@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { CadastroJogadores } from './components/CadastroJogadores';
 import { Marcador } from './components/Marcador';
 import './styles/App.scss';
+import logo from './assets/logo.png';
 
 function App() {
     const [partidaIniciada, setPartidaIniciada] = useState(false);
@@ -22,8 +23,7 @@ function App() {
     return (
         <>
             <header>
-                {/* TODO essa desgraça de logo não está funcionando */}
-                {/* <img src="/img/logo.png" alt="Logo Marcador General" /> */}
+                <img src={logo} alt="Logo Marcador General" className="logo" />
                 <h1 className="font-bold">Marcador de General</h1>
             </header>
             {!partidaIniciada ? (

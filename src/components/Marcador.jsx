@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Tabela } from './Tabela';
 import { FimDeJogo } from './FimDeJogo';
 import './../styles/Marcador.scss';
+import check from './../assets/check-solid.svg';
 
 export function Marcador({ nomes, onGameReset }) {
     const [jogadores, setJogadores] = useState(nomes);
@@ -105,9 +106,10 @@ export function Marcador({ nomes, onGameReset }) {
                             <div className="flex justify-center confirmar-jogada-holder">
                                 <button
                                     onClick={proximoJogador}
-                                    className="botao-padrao font-regular"
+                                    className="botao-padrao font-regular flex center"
                                 >
                                     Confirmar jogada
+                                    <img src={check} className="check" />
                                 </button>
                             </div>
                         )}
@@ -115,7 +117,7 @@ export function Marcador({ nomes, onGameReset }) {
                     <div className="flex justify-center">
                         <button
                             onClick={onGameReset}
-                            className="botao-opaco font-regular"
+                            className="botao-opaco reiniciar-partida font-regular"
                         >
                             Reiniciar partida
                         </button>
