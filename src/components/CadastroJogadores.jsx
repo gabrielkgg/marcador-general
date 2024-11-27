@@ -62,6 +62,11 @@ export function CadastroJogadores({ onGameStart }) {
     };
 
     const handleSalvar = () => {
+        if (nomes.length < numJogadores) {
+            alert('Preencha corretamente o nome de todos os jogadores');
+            return;
+        }
+
         const jogadores = nomes.map((nome) => ({
             nome,
             pontos: {
@@ -113,10 +118,9 @@ export function CadastroJogadores({ onGameStart }) {
             </label>
             <div className="nome-jogadores">
                 {Array.from({ length: numJogadores }, (_, i) => (
-                    <div>
+                    <div key={i}>
                         <label htmlFor={nomes[i] || ''}>Jogador {i + 1}</label>
                         <input
-                            key={i}
                             type="text"
                             className="font-medium"
                             placeholder={`Nome do jogador ${i + 1}`}
