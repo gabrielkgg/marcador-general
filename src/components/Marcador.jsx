@@ -15,6 +15,34 @@ export function Marcador({ nomes, onGameReset }) {
     // Histórico de jogadas confirmadas: array de objetos { jogadorIndex, categoria, pontos }
     const [historicoJogadas, setHistoricoJogadas] = useState([]);
 
+    const recomecarPartida = () => {
+        // Reseta o jogo mantendo os mesmos jogadores e ordem
+        const jogadoresResetados = nomes.map((jogador) => ({
+            nome: jogador.nome,
+            pontos: {
+                ones: undefined,
+                twos: undefined,
+                threes: undefined,
+                fours: undefined,
+                fives: undefined,
+                sixes: undefined,
+                fullHouse: undefined,
+                straight: undefined,
+                quadra: undefined,
+                general: undefined,
+                generalDeMao: undefined,
+                total: 0,
+            },
+        }));
+        setJogadores(jogadoresResetados);
+        setJogadorAtual(0);
+        setMarcouPonto(false);
+        setGameOver(false);
+        setListaNomes([]);
+        setVoltarJogada({});
+        setHistoricoJogadas([]);
+    };
+
     const proximoJogador = () => {
         if (!marcouPonto) {
             return;
@@ -157,6 +185,7 @@ export function Marcador({ nomes, onGameReset }) {
                 <FimDeJogo
                     listaJogadores={listaNomes}
                     onGameReset={onGameReset}
+                    onRecomecarPartida={recomecarPartida}
                 />
             )}
         </>
