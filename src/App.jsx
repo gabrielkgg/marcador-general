@@ -3,6 +3,7 @@ import { CadastroJogadores } from './components/CadastroJogadores';
 import { Marcador } from './components/Marcador';
 import './styles/App.scss';
 import logo from './assets/logo.png';
+import reset from './assets/arrow-rotate-left-solid-full.svg';
 
 function App() {
     const [partidaIniciada, setPartidaIniciada] = useState(false);
@@ -23,8 +24,28 @@ function App() {
     return (
         <>
             <header>
-                <img src={logo} alt="Logo Marcador General" className="logo" />
-                <h1 className="font-bold">Marcador de General</h1>
+                <div className="header-holder">
+                    {partidaIniciada ? (
+                        <img
+                            onClick={handleGameReset}
+                            src={reset}
+                            className="reset"
+                        />
+                    ) : (
+                        <div></div>
+                    )}
+                    <img
+                        src={logo}
+                        alt="Logo Marcador General"
+                        className="logo"
+                    />
+                    <div></div>
+                </div>
+                {!partidaIniciada ? (
+                    <h1 className="font-bold">Marcador de General</h1>
+                ) : (
+                    ''
+                )}
             </header>
             {!partidaIniciada ? (
                 <CadastroJogadores onGameStart={handleGameStart} />

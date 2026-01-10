@@ -13,13 +13,28 @@
 
 .confirmar-jogada-holder {
     margin-top: 1em;
+    gap: 1em;
 }
 
 .reiniciar-partida {
     margin-bottom: 2em;
 }
 
+.check-button {
+    padding: 0 1em;
+
+    &.desativado {
+        background: #6b6b6b;
+        cursor: not-allowed;
+        opacity: 0.6;
+    }
+}
+
 .check {
     width: 20px;
     margin-left: 10px;
+}
+
+.voltar {
+    width: 25px;
 }

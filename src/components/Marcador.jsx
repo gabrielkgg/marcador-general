@@ -3,6 +3,7 @@ import { Tabela } from './Tabela';
 import { FimDeJogo } from './FimDeJogo';
 import './../styles/Marcador.scss';
 import check from './../assets/check-solid.svg';
+import voltar from './../assets/arrow-left-solid-full.svg';
 
 export function Marcador({ nomes, onGameReset }) {
     const [jogadores, setJogadores] = useState(nomes);
@@ -11,11 +12,25 @@ export function Marcador({ nomes, onGameReset }) {
     const [gameOver, setGameOver] = useState(false);
     const [listaNomes, setListaNomes] = useState([]);
     const [voltarJogada, setVoltarJogada] = useState({});
+    // Histórico de jogadas confirmadas: array de objetos { jogadorIndex, categoria, pontos }
+    const [historicoJogadas, setHistoricoJogadas] = useState([]);
 
     const proximoJogador = () => {
-        // if (!marcouPonto) {
-        //     return;
-        // }
+        if (!marcouPonto) {
+            return;
+        }
+
+        // Adiciona a jogada atual ao histórico antes de confirmar
+        if (voltarJogada.jogadorAtual !== undefined) {
+            setHistoricoJogadas((prev) => [
+                ...prev,
+                {
+                    jogadorIndex: voltarJogada.jogadorAtual,
+                    categoria: voltarJogada.obj,
+                    pontos: voltarJogada.pontos,
+                },
+            ]);
+        }
 
         setMarcouPonto(false);
         setJogadorAtual((jogadorAtual + 1) % nomes.length);
@@ -47,17 +62,34 @@ export function Marcador({ nomes, onGameReset }) {
     };
 
     const voltarJogadaHandler = () => {
-        // Previne que volte a jogada caso não tenha feito ainda
-        if (!marcouPonto) {
-            return;
+        // Verifica se há jogadas no histórico para desfazer
+        if (historicoJogadas.length === 0) {
+            return; // Não há jogadas para desfazer
         }
 
+        // Pega a última jogada do histórico
+        const ultimaJogada = historicoJogadas[historicoJogadas.length - 1];
+
+        // Cria uma cópia dos jogadores para modificar
         const novosJogadores = [...jogadores];
-        novosJogadores[voltarJogada.jogadorAtual].pontos[voltarJogada.obj] =
-            undefined;
-        novosJogadores[voltarJogada.jogadorAtual].pontos['total'] -=
-            voltarJogada.pontos;
+
+        // Desfaz os pontos da última jogada
+        const jogadorIndex = ultimaJogada.jogadorIndex;
+        novosJogadores[jogadorIndex].pontos[ultimaJogada.categoria] = undefined;
+        novosJogadores[jogadorIndex].pontos['total'] -= ultimaJogada.pontos;
+
+        // Remove a última jogada do histórico
+        setHistoricoJogadas((prev) => prev.slice(0, -1));
+
+        // Atualiza os jogadores
+        setJogadores(novosJogadores);
+
+        // Volta para o jogador que fez a última jogada (que estamos desfazendo)
+        setJogadorAtual(ultimaJogada.jogadorIndex);
+
+        // Reseta o estado de marcação de ponto
         setMarcouPonto(false);
+        setVoltarJogada({});
     };
 
     const fimDoJogo = () => {
@@ -102,25 +134,23 @@ export function Marcador({ nomes, onGameReset }) {
                             jogadores={jogadores}
                             setPonto={setPonto}
                         />
-                        {marcouPonto && (
-                            <div className="flex justify-center confirmar-jogada-holder">
-                                <button
-                                    onClick={proximoJogador}
-                                    className="botao-padrao font-regular flex center"
-                                >
-                                    Confirmar jogada
-                                    <img src={check} className="check" />
-                                </button>
-                            </div>
-                        )}
-                    </div>
-                    <div className="flex justify-center">
-                        <button
-                            onClick={onGameReset}
-                            className="botao-opaco reiniciar-partida font-regular"
-                        >
-                            Reiniciar partida
-                        </button>
+                        <div className="flex justify-center confirmar-jogada-holder">
+                            <button
+                                className="botao-opaco"
+                                onClick={voltarJogadaHandler}
+                            >
+                                <img src={voltar} className="voltar" />
+                            </button>
+                            <button
+                                onClick={proximoJogador}
+                                className={`botao-padrao font-regular flex center check-button ${
+                                    !marcouPonto ? 'desativado' : ''
+                                }`}
+                            >
+                                Confirmar
+                                <img src={check} className="check" />
+                            </button>
+                        </div>
                     </div>
                 </div>
             ) : (

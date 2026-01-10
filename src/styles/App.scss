@@ -56,8 +56,18 @@ p {
     text-align: center;
 }
 
+.header-holder {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
 .logo {
-    width: 40px;
+    width: 50px;
+}
+
+.reset {
+    width: 25px;
 }
 
 .container {
