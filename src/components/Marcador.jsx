@@ -17,7 +17,7 @@ export function Marcador({ nomes, onGameReset }) {
 
     const recomecarPartida = () => {
         // Reseta o jogo mantendo os mesmos jogadores e ordem
-        const jogadoresResetados = nomes.map((jogador) => ({
+        const jogadoresResetados = jogadores.map((jogador) => ({
             nome: jogador.nome,
             pontos: {
                 ones: undefined,
@@ -61,7 +61,7 @@ export function Marcador({ nomes, onGameReset }) {
         }
 
         setMarcouPonto(false);
-        setJogadorAtual((jogadorAtual + 1) % nomes.length);
+        setJogadorAtual((jogadorAtual + 1) % jogadores.length);
         fimDoJogo();
     };
 
@@ -152,10 +152,10 @@ export function Marcador({ nomes, onGameReset }) {
                 <div>
                     <div className="holder table-holder">
                         <p className="vez-de">
-                            Vez de {nomes[jogadorAtual].nome}
+                            Vez de {jogadores[jogadorAtual].nome}
                         </p>
                         <p className="pontos">
-                            {nomes[jogadorAtual].pontos.total} pontos
+                            {jogadores[jogadorAtual].pontos.total} pontos
                         </p>
                         <Tabela
                             jogadorAtual={jogadorAtual}
