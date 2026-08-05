@@ -66,7 +66,11 @@ O app tem essencialmente **dois modos**, controlados por `App.jsx` via `partidaI
 - Controla `numJogadores` (1–20, default 2) e `nomes[]`.
 - Botões `+`/`-` e input numérico ajustam a quantidade; `useEffect` liga/desliga os
   botões nos limites (1 e 20).
-- `handleSalvar()` monta o array de jogadores no formato canônico e chama `onGameStart`.
+- `handleSalvar()` monta o array de jogadores no formato canônico e chama
+  `onGameStart(jogadores, modo)`.
+- **Modo de jogo**: estado `modo` (`'classico'` default | `'bonus'`), escolhido num toggle
+  de dois botões acima de "Iniciar partida". No modo `'bonus'`, atingir 63+ nas categorias
+  numéricas (1 a 6) rende +35 pontos.
 
 **Formato do jogador** (a "fonte da verdade" do placar):
 
@@ -82,7 +86,12 @@ O app tem essencialmente **dois modos**, controlados por `App.jsx` via `partidaI
 ```
 
 Cada categoria começa `undefined` (= ainda não preenchida) e recebe um número ao ser
-marcada. `total` acumula a soma.
+marcada. `total` acumula a soma **das categorias** (sem o bônus).
+
+> **Bônus de seção superior:** no modo `'bonus'`, o `Marcador` **deriva** o bônus a partir
+> das categorias 1–6 (`calcularBonus`/`totalComBonus`) em vez de guardá-lo em `pontos`.
+> Assim ele acompanha automaticamente as jogadas e o "voltar jogada", e o total exibido/
+> ranqueado é `total + bônus`. Constantes: `BONUS_LIMIAR = 63`, `BONUS_VALOR = 35`.
 
 ### `Marcador.jsx` (núcleo)
 
@@ -143,11 +152,6 @@ Fluxo de uma jogada:
 
 _(itens migrados dos antigos TODOs do README + decisões recentes)_
 
-- [ ] **Modo de jogo selecionável no início da partida:**
-      - _Clássico_ (comportamento atual: total é a soma direta das categorias).
-      - _Com bônus de seção superior_: se a soma das categorias numéricas (1 a 6) atingir
-        **63 ou mais**, o jogador ganha **+35 pontos** de bônus (regra do Yahtzee clássico).
-      A escolha do modo deve ser feita na tela de cadastro, antes de iniciar.
 - [ ] **Testes unitários para validar as pontuações** — cobrir o cálculo de pontos das
       categorias numéricas e especiais, a soma do `total`, o "de mão" (valores extras) e a
       lógica de fim de jogo/ranking (incluindo empates). Não há suíte de testes hoje;
@@ -156,9 +160,6 @@ _(itens migrados dos antigos TODOs do README + decisões recentes)_
 
 ## Bugs conhecidos / limitações
 
-- **Sem bônus de seção superior** — o total é sempre a soma direta (ver roadmap para o
-  modo selecionável).
-- **Cadastro permite 1 jogador** — o mínimo do seletor é 1, mas o jogo pressupõe 2+.
 - **Validação de nomes frágil** — `handleSalvar` só checa `nomes.length`, não campos vazios
   entre jogadores; é possível iniciar com nomes em branco em certas situações.
 - **Estado apenas em memória** — recarregar a página perde a partida em andamento (sem

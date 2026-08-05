@@ -12,6 +12,7 @@ const SPLASH_FADE_MS = 300;
 function App() {
     const [partidaIniciada, setPartidaIniciada] = useState(false);
     const [nomes, setNomes] = useState([]);
+    const [modo, setModo] = useState('classico');
     const [mostrarSplash, setMostrarSplash] = useState(true);
     const [fechandoSplash, setFechandoSplash] = useState(false);
 
@@ -32,9 +33,10 @@ function App() {
         };
     }, []);
 
-    const handleGameStart = (nomes) => {
+    const handleGameStart = (nomes, modo) => {
         setPartidaIniciada(true);
         setNomes(nomes);
+        setModo(modo);
     };
 
     const handleGameReset = () => {
@@ -74,7 +76,11 @@ function App() {
             {!partidaIniciada ? (
                 <CadastroJogadores onGameStart={handleGameStart} />
             ) : (
-                <Marcador nomes={nomes} onGameReset={handleGameReset} />
+                <Marcador
+                    nomes={nomes}
+                    modo={modo}
+                    onGameReset={handleGameReset}
+                />
             )}
         </>
     );

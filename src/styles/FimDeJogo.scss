@@ -36,4 +36,9 @@
         font-size: $font-size;
         color: #ccc;
     }
+
+    &-bonus {
+        color: #45d17a;
+        font-size: $font-size - 3px;
+    }
 }

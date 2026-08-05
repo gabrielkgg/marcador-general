@@ -57,6 +57,17 @@ Você soma apenas os dados de um mesmo número. A pontuação é `quantidade de 
 
 Uma combinação é **"de mão"** quando os cinco dados saem prontos **já na primeira jogada, sem congelar (freeze) nem re-rolar nenhum dado**. Nesse caso ela vale o valor extra (a coluna "De mão" da tabela acima). O General "de mão" é tão valioso que tem sua própria linha, valendo **100 pontos**.
 
+## Modos de jogo
+
+Ao cadastrar os jogadores, você escolhe o modo da partida:
+
+- **Clássico** — a pontuação total é a soma direta de todas as categorias.
+- **Com bônus** — adiciona o **bônus de seção superior**: se a soma das suas **categorias numéricas (1 a 6)** atingir **63 pontos ou mais**, você ganha **+35 pontos** de bônus.
+
+No modo com bônus, o placar mostra um indicador de quanto ainda **falta para o bônus** enquanto você não atinge os 63; ao alcançar, o bônus é somado ao total e sinalizado. Como o bônus depende só das categorias numéricas, uma vez atingido ele não é perdido (a não ser que você desfaça uma jogada que o tenha garantido).
+
+> 💡 Precisa de **pelo menos 2 jogadores** para iniciar uma partida — não dá para jogar sozinho.
+
 ## Fim de jogo
 
 Quando todos completam a tabela, o app exibe o ranking ordenado por pontuação, sinalizado com emojis:

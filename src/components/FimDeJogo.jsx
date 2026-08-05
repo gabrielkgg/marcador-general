@@ -54,6 +54,12 @@ export function FimDeJogo({ listaJogadores, onGameReset, onRecomecarPartida }) {
                                 </div>
                                 <div className="fim-de-jogo-pontos font-regular">
                                     {jogador.pontos} pontos
+                                    {jogador.bonus && (
+                                        <span className="fim-de-jogo-bonus">
+                                            {' '}
+                                            (inclui bônus +35)
+                                        </span>
+                                    )}
                                 </div>
                             </div>
                             <div className="fim-de-jogo-icone">

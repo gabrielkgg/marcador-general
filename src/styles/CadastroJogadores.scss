@@ -55,3 +55,46 @@
         text-align: left;
     }
 }
+
+.modo-jogo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.6em;
+    margin-bottom: 2em;
+    color: $font-white;
+
+    &-titulo {
+        font-size: $font-size;
+    }
+
+    &-opcoes {
+        border: 1px solid $border-color;
+        border-radius: 4px;
+        overflow: hidden;
+    }
+
+    &-botao {
+        padding: 0.6em 1.4em;
+        font-size: $font-size;
+        color: $font-white;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+
+        &.ativo {
+            background: #0092e6;
+            color: #fff;
+        }
+
+        & + & {
+            border-left: 1px solid $border-color;
+        }
+    }
+
+    &-dica {
+        font-size: $font-size - 3px;
+        color: $border-color;
+        text-align: center;
+    }
+}
