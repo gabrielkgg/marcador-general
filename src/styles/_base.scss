@@ -1,4 +1,5 @@
-@import '_all';
+// Reset e estilos globais de elementos. Emitidos uma única vez via global.scss.
+@use 'variaveis' as *;
 
 * {
     margin: 0;

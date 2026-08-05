@@ -1,4 +1,4 @@
-@import '_variaveis';
+@use 'variaveis' as *;
 
 .botao-padrao {
     background: linear-gradient(90deg, #2413a1 0%, #0092e6 100%);
