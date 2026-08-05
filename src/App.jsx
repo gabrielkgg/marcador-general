@@ -1,13 +1,36 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { CadastroJogadores } from './components/CadastroJogadores';
 import { Marcador } from './components/Marcador';
+import { Splash } from './components/Splash';
 import './styles/global.scss';
 import logo from './assets/logo.png';
 import reset from './assets/arrow-rotate-left-solid-full.svg';
 
+const SPLASH_DURACAO_MS = 3000;
+const SPLASH_FADE_MS = 300;
+
 function App() {
     const [partidaIniciada, setPartidaIniciada] = useState(false);
     const [nomes, setNomes] = useState([]);
+    const [mostrarSplash, setMostrarSplash] = useState(true);
+    const [fechandoSplash, setFechandoSplash] = useState(false);
+
+    // Splash de abertura: exibida uma única vez ao montar o app.
+    // Após SPLASH_DURACAO_MS inicia o fade-out e, ao fim dele, é desmontada.
+    useEffect(() => {
+        const timerFade = setTimeout(() => {
+            setFechandoSplash(true);
+        }, SPLASH_DURACAO_MS);
+
+        const timerRemover = setTimeout(() => {
+            setMostrarSplash(false);
+        }, SPLASH_DURACAO_MS + SPLASH_FADE_MS);
+
+        return () => {
+            clearTimeout(timerFade);
+            clearTimeout(timerRemover);
+        };
+    }, []);
 
     const handleGameStart = (nomes) => {
         setPartidaIniciada(true);
@@ -23,6 +46,7 @@ function App() {
 
     return (
         <>
+            {mostrarSplash && <Splash fechando={fechandoSplash} />}
             <header>
                 <div className="header-holder">
                     {partidaIniciada ? (
