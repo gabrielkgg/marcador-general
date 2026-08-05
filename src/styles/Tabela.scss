@@ -30,3 +30,16 @@ td {
         opacity: 0.4;
     }
 }
+
+// Linha espaçadora entre as categorias numéricas (1–6) e as especiais.
+// Substitui o antigo <br> dentro do <tbody> (HTML inválido) sem interferir
+// no arredondamento das células.
+// Duas linhas espaçadoras entre as categorias numéricas (1–6) e as especiais.
+// Substituem o antigo <br> dentro do <tbody> (HTML inválido); o espaço vem da
+// própria existência das linhas (border-spacing da tabela), já que ajustar
+// height/padding em <td> vazio não surte efeito confiável.
+.linha-separadora td {
+    font-size: 0;
+    background: transparent;
+    border-radius: 0;
+}
