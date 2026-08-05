@@ -1,4 +1,4 @@
-@import '_variaveis';
+@use 'variaveis' as *;
 
 table {
     color: $font-white;

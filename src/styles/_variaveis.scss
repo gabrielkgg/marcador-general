@@ -1,4 +1,5 @@
-@import '_flex.scss';
+// Apenas variáveis de tema — este arquivo NÃO emite CSS.
+// Use com `@use 'variaveis' as *;` nos arquivos que precisarem das variáveis.
 
 $padding: 0.3em 1em;
 $font-white: #ececec;
@@ -9,29 +10,3 @@ $background-holder: #191440;
 $padding-holder: 15px;
 $background-gradient: linear-gradient(180deg, #13082f 0%, #2413a1 100%);
 $border-color: #b9b5c1;
-
-.font {
-    &-regular {
-        font-family: 'Roboto Slab', sans-serif;
-        font-weight: 400;
-        font-style: normal;
-    }
-
-    &-medium {
-        font-family: 'Roboto Slab', sans-serif;
-        font-weight: 500;
-        font-style: normal;
-    }
-
-    &-bold {
-        font-family: 'Roboto Slab', sans-serif;
-        font-weight: 700;
-        font-style: normal;
-    }
-
-    &-regular-italic {
-        font-family: 'Roboto Slab', sans-serif;
-        font-weight: 400;
-        font-style: italic;
-    }
-}

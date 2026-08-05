@@ -38,7 +38,8 @@ src/
     Marcador.jsx           # coração do jogo: estado da partida, turnos, histórico
     Tabela.jsx             # grade de categorias × pontuações clicáveis
     FimDeJogo.jsx          # ranking final, emojis, recomeçar/nova partida
-  styles/                # SCSS por componente + parciais (_variaveis, _botoes, _flex...)
+  styles/                # global.scss (base/utilitárias, importado 1x em App.jsx) +
+                         # SCSS por componente + parciais (_variaveis, _fontes, _botoes...)
   assets/                # logo, ícones (svg), favicon
 ```
 
@@ -147,10 +148,7 @@ _(itens migrados dos antigos TODOs do README + decisões recentes)_
       categorias numéricas e especiais, a soma do `total`, o "de mão" (valores extras) e a
       lógica de fim de jogo/ranking (incluindo empates). Não há suíte de testes hoje;
       será preciso escolher e configurar um runner (ex.: Jest + React Testing Library).
-- [ ] **Corrigir imports repetidos de CSS** — ver
-      [issue #2](https://github.com/gabrielkgg/marcador-general/issues/2).
 - [ ] **Publicar nas lojas** (App Store e Play Store) via Capacitor.
-- [ ] **README bonito** 🥰 (em andamento com esta reorganização de docs).
 
 ## Bugs conhecidos / limitações
 

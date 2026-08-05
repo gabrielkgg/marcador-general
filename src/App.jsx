@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { CadastroJogadores } from './components/CadastroJogadores';
 import { Marcador } from './components/Marcador';
-import './styles/App.scss';
+import './styles/global.scss';
 import logo from './assets/logo.png';
 import reset from './assets/arrow-rotate-left-solid-full.svg';
 

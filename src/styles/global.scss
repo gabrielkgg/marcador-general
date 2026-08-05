@@ -1,0 +1,7 @@
+// Folha de estilo global. Importada UMA única vez em App.jsx.
+// Cada parcial é carregado via @use, que garante emissão única do CSS
+// (sem as tags <style> repetidas que motivaram a issue #2).
+@use 'base';
+@use 'flex';
+@use 'fontes';
+@use 'botoes';
