@@ -55,8 +55,8 @@ export function Tabela({ jogadorAtual, jogadores, setPonto }) {
                         ].includes(nomePropriedade);
 
                         return (
-                            <>
-                                <tr key={indexPontos}>
+                            <React.Fragment key={indexPontos}>
+                                <tr>
                                     <th>{legenda}</th>
                                     {valores.map((valor, indexValor) => (
                                         <td
@@ -86,8 +86,24 @@ export function Tabela({ jogadorAtual, jogadores, setPonto }) {
                                         </td>
                                     ))}
                                 </tr>
-                                {indexPontos === 5 && <br />}{' '}
-                            </>
+                                {/* Linhas espaçadoras entre os números (1–6) e as especiais */}
+                                {indexPontos === 5 && (
+                                    <>
+                                        <tr
+                                            className="linha-separadora"
+                                            aria-hidden="true"
+                                        >
+                                            <td colSpan={7} />
+                                        </tr>
+                                        <tr
+                                            className="linha-separadora"
+                                            aria-hidden="true"
+                                        >
+                                            <td colSpan={7} />
+                                        </tr>
+                                    </>
+                                )}
+                            </React.Fragment>
                         );
                     })}
                 </tbody>
