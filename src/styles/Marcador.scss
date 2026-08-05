@@ -7,6 +7,16 @@
     font-weight: 400;
 }
 
+.bonus-indicador {
+    font-size: 14px;
+    color: #45d17a;
+    margin-top: 0.2em;
+
+    &.bonus-faltando {
+        color: #c9a227;
+    }
+}
+
 .table-holder {
     margin: 0 20px 20px;
 }
