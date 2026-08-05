@@ -127,7 +127,10 @@ export function Marcador({ nomes, onGameReset }) {
         );
 
         if (todosPontosMarcados) {
-            const jogadoresOrdenados = jogadores.sort(
+            // Ordena sobre uma cópia para não mutar o array de estado `jogadores`.
+            // Mutar aqui reordenava os jogadores por pontuação, e ao "Recomeçar
+            // partida" eles reiniciavam fora da ordem de cadastro.
+            const jogadoresOrdenados = [...jogadores].sort(
                 (a, b) => b.pontos.total - a.pontos.total
             );
 
