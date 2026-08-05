@@ -34,6 +34,7 @@ src/
   index.html             # template do HtmlWebpackPlugin
   App.jsx                # raiz: alterna entre cadastro e partida; header + reset
   components/
+    Splash.jsx             # tela de abertura (logo + spinner) exibida 1x ao abrir
     CadastroJogadores.jsx  # tela inicial: nº de jogadores + nomes
     Marcador.jsx           # coração do jogo: estado da partida, turnos, histórico
     Tabela.jsx             # grade de categorias × pontuações clicáveis
@@ -53,6 +54,10 @@ O app tem essencialmente **dois modos**, controlados por `App.jsx` via `partidaI
 ### `App.jsx`
 
 - `partidaIniciada` (bool) e `nomes` (array de jogadores).
+- **Splash de abertura**: `mostrarSplash`/`fechandoSplash` controlam a `<Splash />`,
+  exibida como overlay uma única vez ao montar o app. Um `useEffect` com dois `setTimeout`
+  dispara o fade-out após `SPLASH_DURACAO_MS` (3s) e desmonta a splash após o fade
+  (`SPLASH_FADE_MS`, 300ms). Os timers são limpos no cleanup.
 - `handleGameStart(jogadores)`: recebe a lista pronta do cadastro e entra na partida.
 - `handleGameReset()`: confirma via `confirm()` e volta ao cadastro (**nova partida**).
 
@@ -138,7 +143,6 @@ Fluxo de uma jogada:
 
 _(itens migrados dos antigos TODOs do README + decisões recentes)_
 
-- [ ] **Tela de abertura / splash** (loading ao abrir o app).
 - [ ] **Modo de jogo selecionável no início da partida:**
       - _Clássico_ (comportamento atual: total é a soma direta das categorias).
       - _Com bônus de seção superior_: se a soma das categorias numéricas (1 a 6) atingir
