@@ -157,6 +157,15 @@ _(itens migrados dos antigos TODOs do README + decisões recentes)_
       lógica de fim de jogo/ranking (incluindo empates). Não há suíte de testes hoje;
       será preciso escolher e configurar um runner (ex.: Jest + React Testing Library).
 - [ ] **Publicar nas lojas** (App Store e Play Store) via Capacitor.
+- [ ] **Domínio próprio `marcadorgeneral.com.br`**: domínio registrado no registro.br
+      (pagamento pendente). Assim que for pago/liberado, adicionar o domínio no projeto
+      da Vercel e apontar o DNS para lá (nameservers da Vercel ou registros A/CNAME que
+      ela indicar) no painel do registro.br.
+- [ ] **Espaço para ads**
+      ([#7](https://github.com/gabrielkgg/marcador-general/issues/7)): reservar um espaço
+      de anúncios no layout. A issue ainda não tem detalhes; falta definir onde (ex.: rodapé
+      da partida, tela de fim de jogo), qual rede e como isso se comporta no app empacotado
+      pelo Capacitor.
 
 ## Bugs conhecidos / limitações
 
