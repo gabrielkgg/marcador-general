@@ -6,11 +6,14 @@ veja o [README.md](./README.md).
 
 ## Stack
 
-- **React 18** (componentes funcionais + hooks) — sem gerenciador de estado externo.
+- **React 19** (componentes funcionais + hooks) — sem gerenciador de estado externo.
 - **Webpack 5** + **Babel** (`@babel/preset-env`, `@babel/preset-react`) como bundler/transpiler.
 - **Sass (SCSS)** para estilos, carregado via `style-loader` → `css-loader` → `sass-loader`.
-- **Capacitor 6** para empacotar o app web como app nativo (Android/iOS).
+- **Capacitor 8** para empacotar o app web como app nativo (Android/iOS).
+- **Jest 30** + **React Testing Library** para os testes (ambiente jsdom).
 - **Prettier** para formatação.
+
+O projeto roda em **Node 24** (`engines` no `package.json` e `.nvmrc`).
 
 Não há backend nem persistência: todo o estado vive em memória enquanto a partida acontece.
 
@@ -20,7 +23,10 @@ Não há backend nem persistência: todo o estado vive em memória enquanto a pa
 npm install        # instala dependências
 npm start          # sobe o webpack-dev-server e abre no navegador
 npm run build      # build de produção em dist/
-npm run format     # roda o Prettier em src/**
+npm test           # roda a suíte de testes (Jest)
+npm run test:watch # roda os testes em watch
+npm run test:coverage # roda os testes com relatório de cobertura
+npm run format     # roda o Prettier
 ```
 
 O build gera `dist/`, que é o `webDir` consumido pelo Capacitor (ver `capacitor.config.ts`)
@@ -39,9 +45,17 @@ src/
     Marcador.jsx           # coração do jogo: estado da partida, turnos, histórico
     Tabela.jsx             # grade de categorias × pontuações clicáveis
     FimDeJogo.jsx          # ranking final, emojis, recomeçar/nova partida
+  game/                  # regras puras, sem React (o que os testes cobrem 100%)
+    tabelaPontos.js        # categorias, legendas e valores possíveis de cada uma
+    jogadores.js           # criação de jogadores com o placar zerado
+    pontuacao.js           # bônus de seção superior, total, quanto falta
+    ranking.js             # fim de partida, ordenação e vencedores
   styles/                # global.scss (base/utilitárias, importado 1x em App.jsx) +
                          # SCSS por componente + parciais (_variaveis, _fontes, _botoes...)
   assets/                # logo, ícones (svg), favicon
+test/
+  setup.js               # carrega os matchers do @testing-library/jest-dom
+  mockArquivo.js         # stub para imports de imagem/ícone nos testes
 ```
 
 ## Arquitetura e fluxo de estado
@@ -63,16 +77,17 @@ O app tem essencialmente **dois modos**, controlados por `App.jsx` via `partidaI
 
 ### `CadastroJogadores.jsx`
 
-- Controla `numJogadores` (1–20, default 2) e `nomes[]`.
+- Controla `numJogadores` (2–20, default 2) e `nomes[]`.
 - Botões `+`/`-` e input numérico ajustam a quantidade; `useEffect` liga/desliga os
-  botões nos limites (1 e 20).
-- `handleSalvar()` monta o array de jogadores no formato canônico e chama
+  botões nos limites (2 e 20).
+- `handleSalvar()` monta os jogadores com `criarJogadores` e chama
   `onGameStart(jogadores, modo)`.
 - **Modo de jogo**: estado `modo` (`'classico'` default | `'bonus'`), escolhido num toggle
   de dois botões acima de "Iniciar partida". No modo `'bonus'`, atingir 63+ nas categorias
   numéricas (1 a 6) rende +35 pontos.
 
-**Formato do jogador** (a "fonte da verdade" do placar):
+**Formato do jogador** (a "fonte da verdade" do placar), montado por
+`criarJogadores` em `src/game/jogadores.js`:
 
 ```js
 {
@@ -88,10 +103,11 @@ O app tem essencialmente **dois modos**, controlados por `App.jsx` via `partidaI
 Cada categoria começa `undefined` (= ainda não preenchida) e recebe um número ao ser
 marcada. `total` acumula a soma **das categorias** (sem o bônus).
 
-> **Bônus de seção superior:** no modo `'bonus'`, o `Marcador` **deriva** o bônus a partir
-> das categorias 1–6 (`calcularBonus`/`totalComBonus`) em vez de guardá-lo em `pontos`.
-> Assim ele acompanha automaticamente as jogadas e o "voltar jogada", e o total exibido/
-> ranqueado é `total + bônus`. Constantes: `BONUS_LIMIAR = 63`, `BONUS_VALOR = 35`.
+> **Bônus de seção superior:** no modo `'bonus'`, o bônus é **derivado** das categorias
+> 1–6 (`calcularBonus`/`totalComBonus`, em `src/game/pontuacao.js`) em vez de ser guardado
+> em `pontos`. Assim ele acompanha automaticamente as jogadas e o "voltar jogada", e o
+> total exibido/ranqueado é `total + bônus`. Constantes: `BONUS_LIMIAR = 63`,
+> `BONUS_VALOR = 35`.
 
 ### `Marcador.jsx` (núcleo)
 
@@ -112,7 +128,7 @@ Fluxo de uma jogada:
 1. **`setPonto(jogadorAtual, pontos, obj)`** (disparado pelo clique numa célula da `Tabela`):
    - Ignora se a categoria já tem valor (não deixa sobrescrever categoria preenchida).
    - Se o jogador já havia marcado outra célula **nesta mesma rodada** (`marcouPonto`),
-     desfaz a marcação anterior antes de aplicar a nova — permitindo **trocar de escolha**
+     desfaz a marcação anterior antes de aplicar a nova, permitindo **trocar de escolha**
      antes de confirmar.
    - Grava o valor, soma no `total` e guarda em `voltarJogada`.
 2. **`proximoJogador()`** (botão **Confirmar**):
@@ -123,10 +139,12 @@ Fluxo de uma jogada:
 3. **`voltarJogadaHandler()`** (botão **voltar**):
    - Desempilha a última jogada confirmada de `historicoJogadas`, zera aquela categoria,
      subtrai do `total` e devolve a vez ao jogador que a fez.
-4. **`fimDoJogo()`**:
-   - Verifica se **todas** as categorias de **todos** os jogadores estão preenchidas.
-   - Se sim, ordena por `total` desc, marca `vencedor` para quem tem a maior pontuação
-     (permite múltiplos vencedores em empate) e liga `gameOver`.
+4. **`fimDoJogo()`**: delega para `src/game/ranking.js`.
+   - `partidaTerminada` verifica se **todas** as categorias de **todos** os jogadores
+     estão preenchidas.
+   - Se sim, `calcularRanking` ordena por total (já com bônus) desc e marca `vencedor`
+     para quem tem a maior pontuação (permite múltiplos vencedores em empate); o
+     `Marcador` só liga `gameOver`.
 
 > ⚠️ **Nota de implementação:** `marcouPonto` distingue a jogada **em andamento** (ainda
 > trocável antes de confirmar) da jogada **confirmada** (que vai para o `historicoJogadas`).
@@ -135,8 +153,9 @@ Fluxo de uma jogada:
 
 ### `Tabela.jsx`
 
-- Renderiza `arrayPontos`, a definição estática das categorias e suas pontuações possíveis.
-- Cada célula chama `setPonto(jogadorAtual, valor, nomePropriedade)` no clique.
+- Renderiza `CATEGORIAS` (`src/game/tabelaPontos.js`), a definição das categorias e suas
+  pontuações possíveis. A `Tabela` não conhece as regras: só desenha o que vem de lá.
+- Cada célula chama `setPonto(jogadorAtual, valor, categoria)` no clique.
 - Classes CSS: `marcado` (célula escolhida na rodada), `preenchido` (categoria já fechada
   com outro valor). As linhas especiais usam `colSpan={2}`.
 
@@ -148,14 +167,38 @@ Fluxo de uma jogada:
 - Botões: `Recomeçar partida` (`onRecomecarPartida` → mantém jogadores, zera placar) e
   `Nova partida` (`onGameReset` → volta ao cadastro).
 
+## Testes
+
+Runner: **Jest** com ambiente `jsdom` (config em `jest.config.js`), transpilando via
+`babel-jest` e o `.babelrc` do projeto. Os componentes são exercitados com **React
+Testing Library** e `user-event`; SCSS e imagens são mapeados para stubs em `test/`.
+
+Os testes ficam ao lado do código, como `*.test.js` / `*.test.jsx`:
+
+| Arquivo                              | O que cobre                                                     |
+| ------------------------------------ | --------------------------------------------------------------- |
+| `game/tabelaPontos.test.js`          | valores de cada categoria: numéricas, especiais e "de mão"       |
+| `game/jogadores.test.js`             | placar inicial (categorias vazias, total zerado)                  |
+| `game/pontuacao.test.js`             | bônus de seção superior, total com bônus, quanto falta            |
+| `game/ranking.test.js`               | fim de partida, ordenação, empates e bônus no ranking             |
+| `components/Marcador.test.jsx`       | fluxo de jogada: marcar, trocar, confirmar, voltar, fim de jogo   |
+| `components/FimDeJogo.test.jsx`      | emojis do ranking e botões de recomeçar/nova partida              |
+| `components/CadastroJogadores.test.jsx` | validação de nomes, escolha de modo e quantidade de jogadores  |
+
+As regras puras (`src/game/`) estão em **100% de cobertura**; o total do projeto fica em
+torno de 75%, com `App.jsx` e `Splash.jsx` ainda descobertos.
+
+> Ao mexer nas regras, prefira escrever o teste primeiro (red) e só depois a
+> implementação (green): foi assim que `src/game/` nasceu, extraído do `Marcador`.
+
 ## Roadmap / implementações futuras
 
 _(itens migrados dos antigos TODOs do README + decisões recentes)_
 
-- [ ] **Testes unitários para validar as pontuações** — cobrir o cálculo de pontos das
-      categorias numéricas e especiais, a soma do `total`, o "de mão" (valores extras) e a
-      lógica de fim de jogo/ranking (incluindo empates). Não há suíte de testes hoje;
-      será preciso escolher e configurar um runner (ex.: Jest + React Testing Library).
+- [x] **Testes unitários para validar as pontuações**: feito. Jest + React Testing Library
+      configurados e as regras extraídas para `src/game/` (ver a seção [Testes](#testes)).
+- [ ] **Cobrir o que sobrou**: `App.jsx` (troca de telas, confirmação do reset) e
+      `Splash.jsx` (timers do fade) ainda não têm teste.
 - [ ] **Publicar nas lojas** (App Store e Play Store) via Capacitor.
 - [ ] **Domínio próprio `marcadorgeneral.com.br`**: domínio registrado no registro.br
       (pagamento pendente). Assim que for pago/liberado, adicionar o domínio no projeto
@@ -166,10 +209,15 @@ _(itens migrados dos antigos TODOs do README + decisões recentes)_
       de anúncios no layout. A issue ainda não tem detalhes; falta definir onde (ex.: rodapé
       da partida, tela de fim de jogo), qual rede e como isso se comporta no app empacotado
       pelo Capacitor.
+- [ ] **Favicon não chega no build**: o arquivo existe (`src/assets/favicon.ico`) e o
+      `index.html` referencia `./assets/favicon.ico`, mas o webpack não copia o `.ico` para
+      `dist/`, então o app publicado fica sem ícone (404 no caminho). Resolver com a opção
+      `favicon` do `HtmlWebpackPlugin` ou com `copy-webpack-plugin`, e aproveitar para
+      revisar o ícone em si (PNGs em vários tamanhos, `apple-touch-icon`).
 
 ## Bugs conhecidos / limitações
 
-- **Validação de nomes frágil** — `handleSalvar` só checa `nomes.length`, não campos vazios
+- **Validação de nomes frágil**: `handleSalvar` só checa `nomes.length`, não campos vazios
   entre jogadores; é possível iniciar com nomes em branco em certas situações.
 - **Estado apenas em memória** — recarregar a página perde a partida em andamento (sem
   persistência).

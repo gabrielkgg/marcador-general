@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { criarJogadores } from '../game/jogadores';
 import './../styles/CadastroJogadores.scss';
 
 // O jogo exige no mínimo 2 jogadores (não se joga sozinho).
@@ -80,24 +81,7 @@ export function CadastroJogadores({ onGameStart }) {
             return;
         }
 
-        const jogadores = nomes.map((nome) => ({
-            nome,
-            pontos: {
-                ones: undefined,
-                twos: undefined,
-                threes: undefined,
-                fours: undefined,
-                fives: undefined,
-                sixes: undefined,
-                fullHouse: undefined,
-                straight: undefined,
-                quadra: undefined,
-                general: undefined,
-                generalDeMao: undefined,
-                total: 0,
-            },
-        }));
-        onGameStart(jogadores, modo);
+        onGameStart(criarJogadores(nomes), modo);
     };
 
     return (
@@ -107,6 +91,7 @@ export function CadastroJogadores({ onGameStart }) {
                     <button
                         className={`minus font-bold ${podeDiminuirJogador ? '' : 'desativado'}`}
                         onClick={handleMenosJogador}
+                        aria-label="Menos um jogador"
                     >
                         -
                     </button>
@@ -127,6 +112,7 @@ export function CadastroJogadores({ onGameStart }) {
                     <button
                         className={`plus font-bold ${podeAumentarJogador ? '' : 'desativado'}`}
                         onClick={handleMaisJogador}
+                        aria-label="Mais um jogador"
                     >
                         +
                     </button>

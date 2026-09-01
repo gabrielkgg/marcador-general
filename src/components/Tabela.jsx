@@ -1,93 +1,52 @@
 import React from 'react';
+import { CATEGORIAS } from '../game/tabelaPontos';
 import './../styles/Tabela.scss';
 
+// Índice da última categoria numérica: depois dela entram as linhas
+// espaçadoras que separam a seção superior das combinações especiais.
+const ULTIMA_NUMERICA =
+    CATEGORIAS.filter(({ especial }) => !especial).length - 1;
+
 export function Tabela({ jogadorAtual, jogadores, setPonto }) {
-    const arrayPontos = [
-        {
-            ones: { legenda: '1', pontos: [0, 1, 2, 3, 4, 5] },
-        },
-        {
-            twos: { legenda: '2', pontos: [0, 2, 4, 6, 8, 10] },
-        },
-        {
-            threes: { legenda: '3', pontos: [0, 3, 6, 9, 12, 15] },
-        },
-        {
-            fours: { legenda: '4', pontos: [0, 4, 8, 12, 16, 20] },
-        },
-        {
-            fives: { legenda: '5', pontos: [0, 5, 10, 15, 20, 25] },
-        },
-        {
-            sixes: { legenda: '6', pontos: [0, 6, 12, 18, 24, 30] },
-        },
-        {
-            fullHouse: { legenda: 'Fula', pontos: [0, 20, 25] },
-        },
-        {
-            straight: { legenda: 'Seq.', pontos: [0, 30, 35] },
-        },
-        {
-            quadra: { legenda: 'Quad.', pontos: [0, 40, 45] },
-        },
-        {
-            general: { legenda: 'Gen.', pontos: [0, 50] },
-        },
-        {
-            generalDeMao: { legenda: 'De Mão', pontos: [0, 100] },
-        },
-    ];
+    const pontosDoJogador = jogadores[jogadorAtual].pontos;
 
     return (
         <div>
             <table>
                 <tbody>
-                    {arrayPontos.map((pontos, indexPontos) => {
-                        const nomePropriedade = Object.keys(pontos)[0]; // Acessa o nome da propriedade, ex: "ones" ou "twos"
-                        const valores = pontos[nomePropriedade].pontos; // Acessa o array de valores (ex: [0, 1, 2, 3, 4, 5, 6])
-                        const legenda = pontos[nomePropriedade].legenda;
-                        const linhaEspecial = [
-                            'fullHouse',
-                            'straight',
-                            'quadra',
-                            'general',
-                            'generalDeMao',
-                        ].includes(nomePropriedade);
-
-                        return (
-                            <React.Fragment key={indexPontos}>
+                    {CATEGORIAS.map(
+                        ({ categoria, legenda, pontos, especial }, indice) => (
+                            <React.Fragment key={categoria}>
                                 <tr>
                                     <th>{legenda}</th>
-                                    {valores.map((valor, indexValor) => (
+                                    {pontos.map((valor) => (
                                         <td
-                                            key={indexValor}
+                                            key={valor}
                                             onClick={() =>
                                                 setPonto(
                                                     jogadorAtual,
                                                     valor,
-                                                    nomePropriedade
+                                                    categoria
                                                 )
                                             }
                                             className={
-                                                jogadores[jogadorAtual].pontos[
-                                                    nomePropriedade
-                                                ] === valor
+                                                pontosDoJogador[categoria] ===
+                                                valor
                                                     ? 'marcado'
-                                                    : jogadores[jogadorAtual]
-                                                            .pontos[
-                                                            nomePropriedade
+                                                    : pontosDoJogador[
+                                                            categoria
                                                         ] !== undefined
                                                       ? 'preenchido'
                                                       : ''
                                             }
-                                            colSpan={linhaEspecial ? 2 : 1}
+                                            colSpan={especial ? 2 : 1}
                                         >
                                             {valor}
                                         </td>
                                     ))}
                                 </tr>
                                 {/* Linhas espaçadoras entre os números (1–6) e as especiais */}
-                                {indexPontos === 5 && (
+                                {indice === ULTIMA_NUMERICA && (
                                     <>
                                         <tr
                                             className="linha-separadora"
@@ -104,8 +63,8 @@ export function Tabela({ jogadorAtual, jogadores, setPonto }) {
                                     </>
                                 )}
                             </React.Fragment>
-                        );
-                    })}
+                        )
+                    )}
                 </tbody>
             </table>
         </div>
