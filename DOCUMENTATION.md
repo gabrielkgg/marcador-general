@@ -146,6 +146,14 @@ Fluxo de uma jogada:
      primeira rodada, com o histórico vazio).
    - Caso contrário, desempilha a última jogada confirmada de `historicoJogadas`, zera
      aquela categoria, subtrai do `total` e devolve a vez ao jogador que a fez.
+   - Nos dois casos o nome da vez **pisca**, com ritmos diferentes, para deixar claro o
+     que foi desfeito: `piscar-simples` (uma piscada, a vez continua de quem estava
+     jogando) e `piscar-jogada` (três piscadas secas, a vez mudou de jogador). Confirmar
+     uma jogada usa a mesma `piscar-simples`. Em todas o texto vai do branco até
+     `$background-holder`, ou seja, some no fundo e reaparece. O estado `piscada` guarda o
+     tipo e um `id` incremental usado como `key` do `<p>`, o que remonta o elemento e faz a
+     animação recomeçar mesmo em piscadas seguidas do mesmo tipo. As animações respeitam
+     `prefers-reduced-motion`.
 4. **`fimDoJogo()`**: delega para `src/game/ranking.js`.
    - `partidaTerminada` verifica se **todas** as categorias de **todos** os jogadores
      estão preenchidas.
@@ -173,8 +181,14 @@ Fluxo de uma jogada:
 - Recebe o ranking já ordenado e decide o emoji de cada colocado (`getEmoji`):
   troféu (vencedor), aperto de mão (empate), olhos arregalados (diferença ≤ 10 pts) e
   pato (demais).
-- Botões: `Recomeçar partida` (`onRecomecarPartida` → mantém jogadores, zera placar) e
-  `Nova partida` (`onGameReset` → volta ao cadastro).
+- Botões: o primeiro (`onRecomecarPartida`) mantém os jogadores e zera o placar; o segundo
+  (`onGameReset`) volta ao cadastro. Como os dois rótulos antigos ("Recomeçar partida" e
+  "Nova partida") não deixavam claro qual deles reaproveitava o cadastro, agora eles nomeiam
+  o que muda: **Mesmos jogadores** e **Trocar jogadores**.
+- O primeiro rótulo é didático só uma vez: com a prop `jaRecomecou` (o `Marcador` liga essa
+  flag no `recomecarPartida`), da segunda partida em diante o botão vira **Revanche**. Ao
+  trocar de jogadores o `Marcador` é remontado, então a explicação aparece de novo para o
+  grupo novo.
 
 ## Testes
 

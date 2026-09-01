@@ -26,6 +26,17 @@ export function Marcador({ nomes, modo, onGameReset }) {
     const [voltarJogada, setVoltarJogada] = useState({});
     // Histórico de jogadas confirmadas: array de objetos { jogadorIndex, categoria, pontos }
     const [historicoJogadas, setHistoricoJogadas] = useState([]);
+    // Sobrevive ao recomeço: a partir da segunda partida com os mesmos
+    // jogadores, o botão de recomeçar vira "Revanche".
+    const [jaRecomecou, setJaRecomecou] = useState(false);
+    // Piscada do nome da vez, para dar retorno visual do que o "voltar" desfez.
+    // `id` sobe a cada volta e serve de `key`, remontando o elemento para que a
+    // animação recomece mesmo quando o tipo se repete.
+    const [piscada, setPiscada] = useState({ tipo: '', id: 0 });
+
+    const piscar = (tipo) =>
+        setPiscada((atual) => ({ tipo, id: atual.id + 1 }));
+
     const bonusDe = (pontos) => calcularBonus(pontos, modo);
     const totalDe = (pontos) => totalComBonus(pontos, modo);
     const faltandoDe = (pontos) => faltaParaBonus(pontos, modo);
@@ -43,6 +54,8 @@ export function Marcador({ nomes, modo, onGameReset }) {
         setListaNomes([]);
         setVoltarJogada({});
         setHistoricoJogadas([]);
+        setPiscada({ tipo: '', id: 0 });
+        setJaRecomecou(true);
     };
 
     const proximoJogador = () => {
@@ -63,6 +76,7 @@ export function Marcador({ nomes, modo, onGameReset }) {
 
         setMarcouPonto(false);
         setJogadorAtual((jogadorAtual + 1) % jogadores.length);
+        piscar('piscar-simples');
         fimDoJogo();
     };
 
@@ -103,6 +117,7 @@ export function Marcador({ nomes, modo, onGameReset }) {
             );
             setMarcouPonto(false);
             setVoltarJogada({});
+            piscar('piscar-simples');
             return;
         }
 
@@ -124,6 +139,7 @@ export function Marcador({ nomes, modo, onGameReset }) {
         // Devolve a vez a quem fez a jogada desfeita.
         setJogadorAtual(ultimaJogada.jogadorIndex);
         setVoltarJogada({});
+        piscar('piscar-jogada');
     };
 
     const fimDoJogo = () => {
@@ -139,7 +155,10 @@ export function Marcador({ nomes, modo, onGameReset }) {
             {!gameOver ? (
                 <div>
                     <div className="holder table-holder">
-                        <p className="vez-de">
+                        <p
+                            key={piscada.id}
+                            className={`vez-de ${piscada.tipo}`.trim()}
+                        >
                             Vez de {jogadores[jogadorAtual].nome}
                         </p>
                         <p className="pontos">
@@ -188,6 +207,7 @@ export function Marcador({ nomes, modo, onGameReset }) {
                     listaJogadores={listaNomes}
                     onGameReset={onGameReset}
                     onRecomecarPartida={recomecarPartida}
+                    jaRecomecou={jaRecomecou}
                 />
             )}
         </>

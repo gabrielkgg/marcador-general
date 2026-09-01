@@ -1,7 +1,12 @@
 import React from 'react';
 import './../styles/FimDeJogo.scss';
 
-export function FimDeJogo({ listaJogadores, onGameReset, onRecomecarPartida }) {
+export function FimDeJogo({
+    listaJogadores,
+    onGameReset,
+    onRecomecarPartida,
+    jaRecomecou,
+}) {
     // `listaJogadores` chega ordenada do maior para o menor.
     const getEmoji = (jogador, index) => {
         const vizinhos = [
@@ -60,13 +65,15 @@ export function FimDeJogo({ listaJogadores, onGameReset, onRecomecarPartida }) {
                     onClick={onRecomecarPartida}
                     className="botao-padrao font-regular"
                 >
-                    Recomeçar partida
+                    {/* Na primeira vez o rótulo explica o que o botão faz;
+                        depois disso "Revanche" já basta. */}
+                    {jaRecomecou ? 'Revanche' : 'Mesmos jogadores'}
                 </button>
                 <button
                     onClick={onGameReset}
                     className="botao-padrao font-regular"
                 >
-                    Nova partida
+                    Trocar jogadores
                 </button>
             </div>
         </div>

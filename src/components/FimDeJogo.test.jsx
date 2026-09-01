@@ -96,7 +96,7 @@ describe('tela de fim de jogo', () => {
         expect(screen.getByText(/inclui bônus \+35/i)).toBeInTheDocument();
     });
 
-    it('oferece recomeçar a partida e começar uma nova', async () => {
+    it('oferece jogar de novo com os mesmos jogadores ou trocá-los', async () => {
         const usuario = userEvent.setup();
         const onRecomecarPartida = jest.fn();
         const onGameReset = jest.fn();
@@ -106,14 +106,26 @@ describe('tela de fim de jogo', () => {
         });
 
         await usuario.click(
-            screen.getByRole('button', { name: /recomeçar partida/i })
+            screen.getByRole('button', { name: /mesmos jogadores/i })
         );
         await usuario.click(
-            screen.getByRole('button', { name: /nova partida/i })
+            screen.getByRole('button', { name: /trocar jogadores/i })
         );
 
         expect(onRecomecarPartida).toHaveBeenCalledTimes(1);
         expect(onGameReset).toHaveBeenCalledTimes(1);
     });
 
+    it('encurta para "Revanche" a partir da segunda partida com os mesmos jogadores', () => {
+        renderRanking([jogador('Ana', 200, { vencedor: true })], {
+            jaRecomecou: true,
+        });
+
+        expect(
+            screen.getByRole('button', { name: /revanche/i })
+        ).toBeInTheDocument();
+        expect(
+            screen.queryByRole('button', { name: /mesmos jogadores/i })
+        ).not.toBeInTheDocument();
+    });
 });

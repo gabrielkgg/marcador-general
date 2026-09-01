@@ -35,6 +35,8 @@ const voltar = (usuario) => usuario.click(screen.getAllByRole('button')[0]);
 
 const placar = () => screen.getByText(/pontos$/).textContent;
 
+const nomeDaVez = () => screen.getByText(/vez de/i);
+
 describe('fluxo de uma jogada', () => {
     it('soma no placar do jogador da vez a célula marcada', async () => {
         const usuario = renderMarcador();
@@ -253,6 +255,24 @@ describe('fim de jogo', () => {
         expect(screen.getByText(/inclui bônus \+35/i)).toBeInTheDocument();
     });
 
+    it('troca o rótulo para "Revanche" da segunda partida em diante', async () => {
+        const usuario = renderMarcador({ nomes: ['Ana'] });
+
+        await jogarPartidaInteira(usuario, ['Ana']);
+        expect(
+            screen.getByRole('button', { name: /mesmos jogadores/i })
+        ).toBeInTheDocument();
+
+        await usuario.click(
+            screen.getByRole('button', { name: /mesmos jogadores/i })
+        );
+        await jogarPartidaInteira(usuario, ['Ana']);
+
+        expect(
+            screen.getByRole('button', { name: /revanche/i })
+        ).toBeInTheDocument();
+    });
+
     it('recomeça a partida com os mesmos jogadores, na ordem de cadastro e zerada', async () => {
         const usuario = renderMarcador();
 
@@ -260,7 +280,7 @@ describe('fim de jogo', () => {
             Ana: { generalDeMao: 0 },
         });
         await usuario.click(
-            screen.getByRole('button', { name: /recomeçar partida/i })
+            screen.getByRole('button', { name: /mesmos jogadores/i })
         );
 
         // Bob venceu, mas quem recomeça é a Ana: a ordem de cadastro é mantida.
@@ -269,5 +289,43 @@ describe('fim de jogo', () => {
         expect(
             within(linha('3')).getByRole('cell', { name: '15' })
         ).not.toHaveClass('preenchido');
+    });
+});
+
+describe('sinal visual no nome da vez', () => {
+    it('pisca uma vez ao confirmar a jogada', async () => {
+        const usuario = renderMarcador();
+
+        await marcar(usuario, '3', 9);
+        await confirmar(usuario);
+
+        expect(nomeDaVez()).toHaveClass('piscar-simples');
+    });
+
+    it('pisca do mesmo jeito quando só a marcação pendente é desfeita', async () => {
+        const usuario = renderMarcador();
+
+        await marcar(usuario, '3', 9);
+        await voltar(usuario);
+
+        expect(nomeDaVez()).toHaveClass('piscar-simples');
+    });
+
+    it('pisca de outro jeito quando a jogada confirmada é desfeita', async () => {
+        const usuario = renderMarcador();
+
+        await marcar(usuario, '3', 9);
+        await confirmar(usuario);
+        await voltar(usuario);
+
+        expect(nomeDaVez()).toHaveClass('piscar-jogada');
+    });
+
+    it('não pisca ao apenas marcar uma célula', async () => {
+        const usuario = renderMarcador();
+
+        await marcar(usuario, '3', 9);
+
+        expect(nomeDaVez().className).toBe('vez-de');
     });
 });
