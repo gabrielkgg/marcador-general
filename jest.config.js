@@ -8,5 +8,14 @@ module.exports = {
         '\\.(png|jpe?g|gif|svg|ico)$': '<rootDir>/test/mockArquivo.js',
     },
     testMatch: ['<rootDir>/src/**/*.test.{js,jsx}'],
-    collectCoverageFrom: ['src/**/*.{js,jsx}', '!src/index.js'],
+    collectCoverageFrom: ['src/**/*.{js,jsx}', '!src/**/*.test.{js,jsx}'],
+    // A suíte cobre o projeto inteiro: qualquer linha nova precisa vir com teste.
+    coverageThreshold: {
+        global: {
+            statements: 100,
+            branches: 100,
+            functions: 100,
+            lines: 100,
+        },
+    },
 };

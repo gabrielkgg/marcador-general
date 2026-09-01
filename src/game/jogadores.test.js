@@ -13,3 +13,39 @@ describe('criação de jogadores', () => {
         });
     });
 });
+
+describe('marcar e desmarcar pontos', () => {
+    it('grava o valor na categoria e soma no total', () => {
+        const jogadores = marcarPonto(
+            criarJogadores(['Ana', 'Bob']),
+            0,
+            'threes',
+            9
+        );
+
+        expect(jogadores[0].pontos.threes).toBe(9);
+        expect(jogadores[0].pontos.total).toBe(9);
+    });
+
+    it('não mexe nos outros jogadores nem na lista original', () => {
+        const original = criarJogadores(['Ana', 'Bob']);
+        const jogadores = marcarPonto(original, 0, 'threes', 9);
+
+        expect(jogadores[1]).toBe(original[1]);
+        expect(original[0].pontos.threes).toBeUndefined();
+        expect(original[0].pontos.total).toBe(0);
+    });
+
+    it('libera a categoria e devolve o total ao desmarcar', () => {
+        const jogadores = desmarcarPonto(
+            marcarPonto(criarJogadores(['Ana']), 0, 'threes', 9),
+            0,
+            'threes',
+            9
+        );
+
+        expect(jogadores[0].pontos).toHaveProperty('threes');
+        expect(jogadores[0].pontos.threes).toBeUndefined();
+        expect(jogadores[0].pontos.total).toBe(0);
+    });
+});

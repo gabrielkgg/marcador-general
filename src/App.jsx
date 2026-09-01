@@ -55,6 +55,7 @@ function App() {
                         <img
                             onClick={handleGameReset}
                             src={reset}
+                            alt="Reiniciar a partida"
                             className="reset"
                         />
                     ) : (

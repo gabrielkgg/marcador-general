@@ -47,7 +47,7 @@ src/
     FimDeJogo.jsx          # ranking final, emojis, recomeçar/nova partida
   game/                  # regras puras, sem React (o que os testes cobrem 100%)
     tabelaPontos.js        # categorias, legendas e valores possíveis de cada uma
-    jogadores.js           # criação de jogadores com o placar zerado
+    jogadores.js           # criação de jogadores, marcar/desmarcar pontos
     pontuacao.js           # bônus de seção superior, total, quanto falta
     ranking.js             # fim de partida, ordenação e vencedores
   styles/                # global.scss (base/utilitárias, importado 1x em App.jsx) +
@@ -80,6 +80,9 @@ O app tem essencialmente **dois modos**, controlados por `App.jsx` via `partidaI
 - Controla `numJogadores` (2–20, default 2) e `nomes[]`.
 - Botões `+`/`-` e input numérico ajustam a quantidade; `useEffect` liga/desliga os
   botões nos limites (2 e 20).
+- Enquanto se digita, o campo aceita valor vazio ou abaixo do mínimo (quem digita
+  "12" passa por "1"); `handleBlur` devolve o mínimo ao sair do campo. O máximo é
+  barrado na hora, para não renderizar dezenas de campos de nome.
 - `handleSalvar()` monta os jogadores com `criarJogadores` e chama
   `onGameStart(jogadores, modo)`.
 - **Modo de jogo**: estado `modo` (`'classico'` default | `'bonus'`), escolhido num toggle
@@ -136,9 +139,13 @@ Fluxo de uma jogada:
    - Empurra a jogada para `historicoJogadas`.
    - Reseta `marcouPonto`, avança `jogadorAtual` de forma circular (`% jogadores.length`)
      e chama `fimDoJogo()`.
-3. **`voltarJogadaHandler()`** (botão **voltar**):
-   - Desempilha a última jogada confirmada de `historicoJogadas`, zera aquela categoria,
-     subtrai do `total` e devolve a vez ao jogador que a fez.
+3. **`voltarJogadaHandler()`** (botão **voltar**), nesta ordem:
+   - Se o jogador da vez tem uma marcação **ainda não confirmada**, desfaz só ela e a vez
+     continua dele. Isso vem primeiro porque essa marcação não está no histórico: se o
+     botão fosse direto ao histórico, a célula ficaria travada para sempre (era o caso da
+     primeira rodada, com o histórico vazio).
+   - Caso contrário, desempilha a última jogada confirmada de `historicoJogadas`, zera
+     aquela categoria, subtrai do `total` e devolve a vez ao jogador que a fez.
 4. **`fimDoJogo()`**: delega para `src/game/ranking.js`.
    - `partidaTerminada` verifica se **todas** as categorias de **todos** os jogadores
      estão preenchidas.
@@ -148,8 +155,10 @@ Fluxo de uma jogada:
 
 > ⚠️ **Nota de implementação:** `marcouPonto` distingue a jogada **em andamento** (ainda
 > trocável antes de confirmar) da jogada **confirmada** (que vai para o `historicoJogadas`).
-> São dois mecanismos de "desfazer" diferentes: trocar a célula antes de confirmar vs.
-> voltar uma jogada já confirmada.
+> São dois estados diferentes de "desfazer", e o botão **voltar** atende aos dois: primeiro
+> a marcação pendente, depois o histórico. Marcar e desmarcar passam por `marcarPonto` /
+> `desmarcarPonto` (`src/game/jogadores.js`), que devolvem uma nova lista em vez de mutar
+> os jogadores.
 
 ### `Tabela.jsx`
 
@@ -184,9 +193,12 @@ Os testes ficam ao lado do código, como `*.test.js` / `*.test.jsx`:
 | `components/Marcador.test.jsx`       | fluxo de jogada: marcar, trocar, confirmar, voltar, fim de jogo   |
 | `components/FimDeJogo.test.jsx`      | emojis do ranking e botões de recomeçar/nova partida              |
 | `components/CadastroJogadores.test.jsx` | validação de nomes, escolha de modo e quantidade de jogadores  |
+| `App.test.jsx`                       | splash, troca cadastro ↔ partida e confirmação do reset          |
+| `index.test.jsx`                     | montagem do app no `#root`                                       |
 
-As regras puras (`src/game/`) estão em **100% de cobertura**; o total do projeto fica em
-torno de 75%, com `App.jsx` e `Splash.jsx` ainda descobertos.
+A suíte cobre **100%** de `src/` (statements, branches, funções e linhas), e o
+`jest.config.js` tem `coverageThreshold` em 100: `npm run test:coverage` falha se algo
+novo entrar sem teste.
 
 > Ao mexer nas regras, prefira escrever o teste primeiro (red) e só depois a
 > implementação (green): foi assim que `src/game/` nasceu, extraído do `Marcador`.
@@ -196,9 +208,8 @@ torno de 75%, com `App.jsx` e `Splash.jsx` ainda descobertos.
 _(itens migrados dos antigos TODOs do README + decisões recentes)_
 
 - [x] **Testes unitários para validar as pontuações**: feito. Jest + React Testing Library
-      configurados e as regras extraídas para `src/game/` (ver a seção [Testes](#testes)).
-- [ ] **Cobrir o que sobrou**: `App.jsx` (troca de telas, confirmação do reset) e
-      `Splash.jsx` (timers do fade) ainda não têm teste.
+      configurados, as regras extraídas para `src/game/` e 100% de cobertura em `src/`
+      (ver a seção [Testes](#testes)).
 - [ ] **Publicar nas lojas** (App Store e Play Store) via Capacitor.
 - [ ] **Domínio próprio `marcadorgeneral.com.br`**: domínio registrado no registro.br
       (pagamento pendente). Assim que for pago/liberado, adicionar o domínio no projeto
@@ -218,6 +229,7 @@ _(itens migrados dos antigos TODOs do README + decisões recentes)_
 ## Bugs conhecidos / limitações
 
 - **Validação de nomes frágil**: `handleSalvar` só checa `nomes.length`, não campos vazios
-  entre jogadores; é possível iniciar com nomes em branco em certas situações.
+  entre jogadores; é possível iniciar com nomes em branco em certas situações. Ex.: com 3
+  jogadores, preencher só o 1º e o 3º passa na validação.
 - **Estado apenas em memória** — recarregar a página perde a partida em andamento (sem
   persistência).

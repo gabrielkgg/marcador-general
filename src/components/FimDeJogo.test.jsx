@@ -68,6 +68,28 @@ describe('tela de fim de jogo', () => {
         expect(emojiDe('Bob')).toBe(OLHOS_ARREGALADOS);
     });
 
+    it('sinaliza disputa apertada também para quem está sendo alcançado', () => {
+        renderRanking([
+            jogador('Ana', 200, { vencedor: true }),
+            jogador('Bob', 150),
+            jogador('Cid', 145),
+        ]);
+
+        expect(emojiDe('Bob')).toBe(OLHOS_ARREGALADOS);
+        expect(emojiDe('Cid')).toBe(OLHOS_ARREGALADOS);
+    });
+
+    it('dá o pato a quem está longe dos dois vizinhos', () => {
+        renderRanking([
+            jogador('Ana', 200, { vencedor: true }),
+            jogador('Bob', 150),
+            jogador('Cid', 100),
+        ]);
+
+        expect(emojiDe('Bob')).toBe(PATO);
+        expect(emojiDe('Cid')).toBe(PATO);
+    });
+
     it('avisa quando a pontuação inclui o bônus', () => {
         renderRanking([jogador('Ana', 135, { vencedor: true, bonus: true })]);
 

@@ -75,6 +75,17 @@ describe('fluxo de uma jogada', () => {
     });
 });
 
+describe('confirmar sem marcar', () => {
+    it('não passa a vez enquanto nenhuma célula foi escolhida', async () => {
+        const usuario = renderMarcador();
+
+        await confirmar(usuario);
+
+        expect(screen.getByText(/vez de ana/i)).toBeInTheDocument();
+        expect(placar()).toBe('0 pontos');
+    });
+});
+
 describe('voltar jogada', () => {
     it('desfaz a última jogada confirmada e devolve a vez a quem a fez', async () => {
         const usuario = renderMarcador();
@@ -83,6 +94,38 @@ describe('voltar jogada', () => {
         await confirmar(usuario);
         await voltar(usuario);
 
+        expect(screen.getByText(/vez de ana/i)).toBeInTheDocument();
+        expect(placar()).toBe('0 pontos');
+    });
+
+    it('desfaz a marcação ainda não confirmada, liberando a categoria', async () => {
+        const usuario = renderMarcador();
+
+        await marcar(usuario, '3', 9);
+        await voltar(usuario);
+
+        expect(screen.getByText(/vez de ana/i)).toBeInTheDocument();
+        expect(placar()).toBe('0 pontos');
+
+        // A categoria volta a aceitar outro valor.
+        await marcar(usuario, '3', 15);
+        expect(placar()).toBe('15 pontos');
+    });
+
+    it('desfaz primeiro a marcação pendente, sem comer a jogada do outro jogador', async () => {
+        const usuario = renderMarcador();
+
+        await marcar(usuario, '1', 5);
+        await confirmar(usuario);
+        await marcar(usuario, '2', 10);
+        await voltar(usuario);
+
+        // A vez continua do Bob, agora sem a marcação pendente.
+        expect(screen.getByText(/vez de bob/i)).toBeInTheDocument();
+        expect(placar()).toBe('0 pontos');
+
+        // O segundo clique é que desfaz a jogada confirmada da Ana.
+        await voltar(usuario);
         expect(screen.getByText(/vez de ana/i)).toBeInTheDocument();
         expect(placar()).toBe('0 pontos');
     });
@@ -124,6 +167,22 @@ describe('indicador de bônus', () => {
         await marcar(usuario, '3', 9);
 
         expect(screen.queryByText(/bônus/i)).not.toBeInTheDocument();
+    });
+
+    it('perde o bônus ao voltar a jogada que o havia garantido', async () => {
+        const usuario = renderMarcador({ nomes: ['Ana'], modo: 'bonus' });
+
+        for (const [legenda, valor] of SECAO_SUPERIOR_COM_BONUS) {
+            await marcar(usuario, legenda, valor);
+            await confirmar(usuario);
+        }
+        await voltar(usuario);
+
+        expect(screen.queryByText(/bônus \+35/i)).not.toBeInTheDocument();
+        expect(
+            screen.getByText(/faltam 18 pts para o bônus/i)
+        ).toBeInTheDocument();
+        expect(placar()).toBe('45 pontos');
     });
 
     it('sinaliza o bônus e o soma ao placar ao atingir 63 nos números', async () => {
@@ -169,4 +228,46 @@ describe('fim de jogo', () => {
         expect(screen.getByText(/\u{1F3C6}/u)).toBeInTheDocument();
     });
 
+    it('no modo bônus, encerra somando o bônus e avisando no ranking', async () => {
+        const usuario = renderMarcador({
+            nomes: ['Ana', 'Bob'],
+            modo: 'bonus',
+        });
+
+        await jogarPartidaInteira(usuario, ['Ana', 'Bob'], {
+            // Bob zera os números e fica sem bônus; Ana marca o máximo e ganha.
+            Bob: {
+                ones: 0,
+                twos: 0,
+                threes: 0,
+                fours: 0,
+                fives: 0,
+                sixes: 0,
+            },
+        });
+
+        const itens = screen.getAllByText(/pontos$/);
+        // O texto do vencedor também traz o aviso do bônus, por isso o toMatch.
+        expect(itens[0].textContent).toMatch(/^395 pontos/);
+        expect(itens[1].textContent).toBe('255 pontos');
+        expect(screen.getByText(/inclui bônus \+35/i)).toBeInTheDocument();
+    });
+
+    it('recomeça a partida com os mesmos jogadores, na ordem de cadastro e zerada', async () => {
+        const usuario = renderMarcador();
+
+        await jogarPartidaInteira(usuario, ['Ana', 'Bob'], {
+            Ana: { generalDeMao: 0 },
+        });
+        await usuario.click(
+            screen.getByRole('button', { name: /recomeçar partida/i })
+        );
+
+        // Bob venceu, mas quem recomeça é a Ana: a ordem de cadastro é mantida.
+        expect(screen.getByText(/vez de ana/i)).toBeInTheDocument();
+        expect(placar()).toBe('0 pontos');
+        expect(
+            within(linha('3')).getByRole('cell', { name: '15' })
+        ).not.toHaveClass('preenchido');
+    });
 });

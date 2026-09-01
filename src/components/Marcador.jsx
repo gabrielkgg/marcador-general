@@ -1,7 +1,11 @@
 import React, { useState } from 'react';
 import { Tabela } from './Tabela';
 import { FimDeJogo } from './FimDeJogo';
-import { criarPontosVazios } from '../game/jogadores';
+import {
+    criarPontosVazios,
+    desmarcarPonto,
+    marcarPonto,
+} from '../game/jogadores';
 import {
     BONUS_VALOR,
     calcularBonus,
@@ -22,7 +26,6 @@ export function Marcador({ nomes, modo, onGameReset }) {
     const [voltarJogada, setVoltarJogada] = useState({});
     // Histórico de jogadas confirmadas: array de objetos { jogadorIndex, categoria, pontos }
     const [historicoJogadas, setHistoricoJogadas] = useState([]);
-
     const bonusDe = (pontos) => calcularBonus(pontos, modo);
     const totalDe = (pontos) => totalComBonus(pontos, modo);
     const faltandoDe = (pontos) => faltaParaBonus(pontos, modo);
@@ -47,17 +50,16 @@ export function Marcador({ nomes, modo, onGameReset }) {
             return;
         }
 
-        // Adiciona a jogada atual ao histórico antes de confirmar
-        if (voltarJogada.jogadorAtual !== undefined) {
-            setHistoricoJogadas((prev) => [
-                ...prev,
-                {
-                    jogadorIndex: voltarJogada.jogadorAtual,
-                    categoria: voltarJogada.obj,
-                    pontos: voltarJogada.pontos,
-                },
-            ]);
-        }
+        // Adiciona a jogada atual ao histórico antes de confirmar. `marcouPonto`
+        // só fica true junto com `voltarJogada`, então aqui ela sempre existe.
+        setHistoricoJogadas((prev) => [
+            ...prev,
+            {
+                jogadorIndex: voltarJogada.jogadorAtual,
+                categoria: voltarJogada.obj,
+                pontos: voltarJogada.pontos,
+            },
+        ]);
 
         setMarcouPonto(false);
         setJogadorAtual((jogadorAtual + 1) % jogadores.length);
@@ -65,57 +67,62 @@ export function Marcador({ nomes, modo, onGameReset }) {
     };
 
     const setPonto = (jogadorAtual, pontos, obj) => {
-        // Evita alterar diretamente o array nomes
-        const novosJogadores = [...jogadores];
-
         // Se a categoria (ex: 'ones') já tiver um valor, não permite alteração
-        if (novosJogadores[jogadorAtual].pontos[obj] !== undefined) {
+        if (jogadores[jogadorAtual].pontos[obj] !== undefined) {
             return;
         }
 
-        // Se detectamos que o jogador já marcou ponto nessa rodada, reduzimos o que tinha marcado antes
-        if (marcouPonto) {
-            novosJogadores[voltarJogada.jogadorAtual].pontos[voltarJogada.obj] =
-                undefined;
-            novosJogadores[voltarJogada.jogadorAtual].pontos['total'] -=
-                voltarJogada.pontos;
-        }
+        // Se o jogador já marcou nessa rodada, desfaz a marcação anterior antes
+        // de aplicar a nova, permitindo trocar de escolha antes de confirmar.
+        const base = marcouPonto
+            ? desmarcarPonto(
+                  jogadores,
+                  voltarJogada.jogadorAtual,
+                  voltarJogada.obj,
+                  voltarJogada.pontos
+              )
+            : jogadores;
 
+        setJogadores(marcarPonto(base, jogadorAtual, obj, pontos));
         setMarcouPonto(true);
-        novosJogadores[jogadorAtual].pontos[obj] = pontos;
-        novosJogadores[jogadorAtual].pontos['total'] += pontos;
         setVoltarJogada({ jogadorAtual, obj, pontos });
-        setJogadores(novosJogadores);
     };
 
     const voltarJogadaHandler = () => {
-        // Verifica se há jogadas no histórico para desfazer
-        if (historicoJogadas.length === 0) {
-            return; // Não há jogadas para desfazer
+        // A marcação ainda não confirmada é a primeira a ser desfeita: ela não
+        // está no histórico, então nenhum clique posterior conseguiria removê-la
+        // (era assim que uma célula ficava travada na primeira rodada).
+        if (marcouPonto) {
+            setJogadores(
+                desmarcarPonto(
+                    jogadores,
+                    voltarJogada.jogadorAtual,
+                    voltarJogada.obj,
+                    voltarJogada.pontos
+                )
+            );
+            setMarcouPonto(false);
+            setVoltarJogada({});
+            return;
         }
 
-        // Pega a última jogada do histórico
+        // Sem marcação pendente, desfaz a última jogada confirmada.
+        if (historicoJogadas.length === 0) {
+            return;
+        }
+
         const ultimaJogada = historicoJogadas[historicoJogadas.length - 1];
-
-        // Cria uma cópia dos jogadores para modificar
-        const novosJogadores = [...jogadores];
-
-        // Desfaz os pontos da última jogada
-        const jogadorIndex = ultimaJogada.jogadorIndex;
-        novosJogadores[jogadorIndex].pontos[ultimaJogada.categoria] = undefined;
-        novosJogadores[jogadorIndex].pontos['total'] -= ultimaJogada.pontos;
-
-        // Remove a última jogada do histórico
+        setJogadores(
+            desmarcarPonto(
+                jogadores,
+                ultimaJogada.jogadorIndex,
+                ultimaJogada.categoria,
+                ultimaJogada.pontos
+            )
+        );
         setHistoricoJogadas((prev) => prev.slice(0, -1));
-
-        // Atualiza os jogadores
-        setJogadores(novosJogadores);
-
-        // Volta para o jogador que fez a última jogada (que estamos desfazendo)
+        // Devolve a vez a quem fez a jogada desfeita.
         setJogadorAtual(ultimaJogada.jogadorIndex);
-
-        // Reseta o estado de marcação de ponto
-        setMarcouPonto(false);
         setVoltarJogada({});
     };
 
@@ -136,8 +143,7 @@ export function Marcador({ nomes, modo, onGameReset }) {
                             Vez de {jogadores[jogadorAtual].nome}
                         </p>
                         <p className="pontos">
-                            {totalDe(jogadores[jogadorAtual].pontos)}{' '}
-                            pontos
+                            {totalDe(jogadores[jogadorAtual].pontos)} pontos
                         </p>
                         {bonusDe(jogadores[jogadorAtual].pontos) > 0 ? (
                             <p className="bonus-indicador font-regular">
@@ -148,9 +154,7 @@ export function Marcador({ nomes, modo, onGameReset }) {
                                 null && (
                                 <p className="bonus-indicador bonus-faltando font-regular">
                                     Faltam{' '}
-                                    {faltandoDe(
-                                        jogadores[jogadorAtual].pontos
-                                    )}{' '}
+                                    {faltandoDe(jogadores[jogadorAtual].pontos)}{' '}
                                     pts para o bônus
                                 </p>
                             )
