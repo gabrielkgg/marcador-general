@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { criarJogadores } from '../game/jogadores';
 import './../styles/CadastroJogadores.scss';
 
 // O jogo exige no mínimo 2 jogadores (não se joga sozinho).
@@ -14,24 +15,20 @@ export function CadastroJogadores({ onGameStart }) {
     const [modo, setModo] = useState('classico');
 
     const handleNumJogadoresChange = (e) => {
-        let valor = parseInt(e.target.value, 10);
+        const valor = e.target.value;
 
-        // Permite valor vazio temporariamente; o clamp final ocorre no blur.
-        if (
-            valor === '' ||
-            (parseInt(valor, 10) >= MIN_JOGADORES &&
-                parseInt(valor, 10) <= MAX_JOGADORES)
-        ) {
-            setNumJogadores(valor);
+        // Aceita o campo vazio ou um valor abaixo do mínimo enquanto se digita
+        // (quem digita "12" passa por "1"); o mínimo é garantido no blur. Já o
+        // máximo é barrado na hora, para não renderizar dezenas de campos.
+        if (valor === '' || Number(valor) <= MAX_JOGADORES) {
+            setNumJogadores(valor === '' ? '' : Number(valor));
         }
     };
 
     const handleBlur = () => {
-        // Ao sair do campo, garante que fique dentro dos limites válidos.
+        // Ao sair do campo, garante o mínimo. O máximo já foi barrado ao digitar.
         if (numJogadores === '' || numJogadores < MIN_JOGADORES) {
             setNumJogadores(MIN_JOGADORES);
-        } else if (numJogadores > MAX_JOGADORES) {
-            setNumJogadores(MAX_JOGADORES);
         }
     };
 
@@ -69,35 +66,14 @@ export function CadastroJogadores({ onGameStart }) {
     };
 
     const handleSalvar = () => {
-        // Não é possível jogar sozinho.
-        if (numJogadores < MIN_JOGADORES) {
-            alert('São necessários pelo menos 2 jogadores para iniciar');
-            return;
-        }
-
+        // O mínimo de jogadores já é garantido pelo campo (ver `handleBlur`),
+        // então aqui só resta conferir os nomes.
         if (nomes.length < numJogadores) {
             alert('Preencha corretamente o nome de todos os jogadores');
             return;
         }
 
-        const jogadores = nomes.map((nome) => ({
-            nome,
-            pontos: {
-                ones: undefined,
-                twos: undefined,
-                threes: undefined,
-                fours: undefined,
-                fives: undefined,
-                sixes: undefined,
-                fullHouse: undefined,
-                straight: undefined,
-                quadra: undefined,
-                general: undefined,
-                generalDeMao: undefined,
-                total: 0,
-            },
-        }));
-        onGameStart(jogadores, modo);
+        onGameStart(criarJogadores(nomes), modo);
     };
 
     return (
@@ -107,16 +83,13 @@ export function CadastroJogadores({ onGameStart }) {
                     <button
                         className={`minus font-bold ${podeDiminuirJogador ? '' : 'desativado'}`}
                         onClick={handleMenosJogador}
+                        aria-label="Menos um jogador"
                     >
                         -
                     </button>
                     <input
                         type="number"
-                        value={
-                            numJogadores >= MIN_JOGADORES
-                                ? numJogadores
-                                : MIN_JOGADORES
-                        }
+                        value={numJogadores}
                         onChange={handleNumJogadoresChange}
                         onBlur={handleBlur}
                         inputMode="numeric"
@@ -127,6 +100,7 @@ export function CadastroJogadores({ onGameStart }) {
                     <button
                         className={`plus font-bold ${podeAumentarJogador ? '' : 'desativado'}`}
                         onClick={handleMaisJogador}
+                        aria-label="Mais um jogador"
                     >
                         +
                     </button>
@@ -134,7 +108,7 @@ export function CadastroJogadores({ onGameStart }) {
                 jogadores
             </label>
             <div className="nome-jogadores">
-                {Array.from({ length: numJogadores }, (_, i) => (
+                {Array.from({ length: numJogadores || 0 }, (_, i) => (
                     <div key={i}>
                         <label htmlFor={nomes[i] || ''}>Jogador {i + 1}</label>
                         <input

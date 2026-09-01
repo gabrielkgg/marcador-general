@@ -1,44 +1,35 @@
 import React from 'react';
 import './../styles/FimDeJogo.scss';
 
-export function FimDeJogo({ listaJogadores, onGameReset, onRecomecarPartida }) {
+export function FimDeJogo({
+    listaJogadores,
+    onGameReset,
+    onRecomecarPartida,
+    jaRecomecou,
+}) {
+    // `listaJogadores` chega ordenada do maior para o menor.
     const getEmoji = (jogador, index) => {
-        // Verifica se há empate (mesma pontuação que anterior ou próximo)
-        const temEmpateAnterior =
-            index > 0 && listaJogadores[index - 1].pontos === jogador.pontos;
-        const temEmpateProximo =
-            index < listaJogadores.length - 1 &&
-            listaJogadores[index + 1].pontos === jogador.pontos;
+        const vizinhos = [
+            listaJogadores[index - 1],
+            listaJogadores[index + 1],
+        ].filter(Boolean);
 
-        if (temEmpateAnterior || temEmpateProximo) {
-            return ' \u{1F91D}'; // Handshake para empates
+        if (vizinhos.some((vizinho) => vizinho.pontos === jogador.pontos)) {
+            return ' \u{1F91D}'; // Aperto de mão para empates
         }
 
         if (jogador.vencedor) {
             return ' \u{1F3C6}'; // Troféu para o vencedor
         }
 
-        // Verifica se o próximo colocado está muito próximo (diferença de 10 pontos ou menos)
-        if (index < listaJogadores.length - 1) {
-            const proximoJogador = listaJogadores[index + 1];
-            const diferencaPontos = jogador.pontos - proximoJogador.pontos;
+        // Disputa apertada: algum vizinho no ranking a 10 pontos ou menos.
+        const disputaApertada = vizinhos.some(
+            (vizinho) => Math.abs(vizinho.pontos - jogador.pontos) <= 10
+        );
 
-            if (diferencaPontos >= 0 && diferencaPontos <= 10) {
-                return ' \u{1F633}'; // Cara com olhos arregalados quando próximo está muito perto
-            }
-        }
-
-        // Verifica se o jogador anterior está muito próximo (diferença de 10 pontos ou menos)
-        if (index > 0) {
-            const jogadorAnterior = listaJogadores[index - 1];
-            const diferencaPontos = jogadorAnterior.pontos - jogador.pontos;
-
-            if (diferencaPontos >= 0 && diferencaPontos <= 10) {
-                return ' \u{1F633}'; // Cara com olhos arregalados quando anterior está muito perto
-            }
-        }
-
-        return ' \u{1F986}'; // Pato para os demais
+        return disputaApertada
+            ? ' \u{1F633}' // Cara com olhos arregalados
+            : ' \u{1F986}'; // Pato para os demais
     };
 
     return (
@@ -74,13 +65,15 @@ export function FimDeJogo({ listaJogadores, onGameReset, onRecomecarPartida }) {
                     onClick={onRecomecarPartida}
                     className="botao-padrao font-regular"
                 >
-                    Recomeçar partida
+                    {/* Na primeira vez o rótulo explica o que o botão faz;
+                        depois disso "Revanche" já basta. */}
+                    {jaRecomecou ? 'Revanche' : 'Mesmos jogadores'}
                 </button>
                 <button
                     onClick={onGameReset}
                     className="botao-padrao font-regular"
                 >
-                    Nova partida
+                    Trocar jogadores
                 </button>
             </div>
         </div>

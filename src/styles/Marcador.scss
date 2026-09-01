@@ -1,3 +1,5 @@
+@use 'variaveis' as *;
+
 .vez-de {
     font-size: 24px;
 }
@@ -47,4 +49,34 @@
 
 .voltar {
     width: 25px;
+}
+
+// Piscadas do nome da vez, para diferenciar o que o botão "voltar" desfez.
+// A cor vai do branco até o fundo do holder, ou seja, o texto some e reaparece.
+// A mesma animação serve aos dois casos: o que muda é o ritmo e a repetição.
+@keyframes piscar {
+    50% {
+        color: $background-holder;
+    }
+}
+
+.vez-de {
+    // Confirmar a jogada ou desfazer só a marcação pendente: uma piscada suave,
+    // sinalizando que a mudança foi pequena.
+    &.piscar-simples {
+        animation: piscar 0.4s ease;
+    }
+
+    // Jogada já confirmada: três piscadas, porque a vez mudou de jogador.
+    // `steps(1)` corta a transição e deixa o corte seco.
+    &.piscar-jogada {
+        animation: piscar 0.5s steps(1, end) 3;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .vez-de.piscar-simples,
+    .vez-de.piscar-jogada {
+        animation: none;
+    }
 }
