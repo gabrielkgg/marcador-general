@@ -7,7 +7,10 @@ module.exports = {
         // Imagens/ícones: viram uma string, como o asset/resource faz no webpack.
         '\\.(png|jpe?g|gif|svg|ico)$': '<rootDir>/test/mockArquivo.js',
     },
-    testMatch: ['<rootDir>/src/**/*.test.{js,jsx}'],
+    testMatch: [
+        '<rootDir>/src/**/*.test.{js,jsx}',
+        '<rootDir>/test/**/*.test.js',
+    ],
     collectCoverageFrom: ['src/**/*.{js,jsx}', '!src/**/*.test.{js,jsx}'],
     // A suíte cobre o projeto inteiro: qualquer linha nova precisa vir com teste.
     coverageThreshold: {
